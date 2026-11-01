@@ -1,3 +1,11 @@
+# Historical reference only; not the new implementation.
+# Source repository: https://github.com/jdipaola-stack/MAS-2026
+# Source branch: main
+# Source path: paper_experiments.py
+# Source commit: 130c443945ac455d06a53abb6c7834128a6b0692
+# Source file: https://github.com/jdipaola-stack/MAS-2026/blob/130c443945ac455d06a53abb6c7834128a6b0692/paper_experiments.py
+# Archived with provenance comments only; original logic unchanged.
+
 """Sweep the 2018 model's environmental weight and school size with matched fields."""
 
 import argparse

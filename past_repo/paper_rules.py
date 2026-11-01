@@ -1,3 +1,11 @@
+# Historical reference only; not the new implementation.
+# Source repository: https://github.com/jdipaola-stack/MAS-2026
+# Source branch: main
+# Source path: paper_rules.py
+# Source commit: 130c443945ac455d06a53abb6c7834128a6b0692
+# Source file: https://github.com/jdipaola-stack/MAS-2026/blob/130c443945ac455d06a53abb6c7834128a6b0692/paper_rules.py
+# Archived with provenance comments only; original logic unchanged.
+
 """Puckett et al. (2018) movement equations and a reproducible light-field surrogate.
 
 Equations 6–7 and supplement equations 4–10 are implemented in body lengths.

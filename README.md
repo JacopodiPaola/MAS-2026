@@ -8,6 +8,6 @@ Doruk is working on visualization; Maria is working on the Couzin interaction lo
 
 ## Historical reference files
 
-The previous project's files are preserved in [`history_only/`](history_only/README.md). They are reading and comparison material, not the new implementation. The archive guide explains which ideas may be reused, what needs adapting, and the limitations of the old experiments.
+The previous project's files are preserved in [`past_repo/`](past_repo/README.md). They are reading and comparison material, not the new implementation. The archive guide explains which ideas may be reused, what needs adapting, and the limitations of the old experiments.
 
-Keep new implementation files outside `history_only/`. The historical dependencies and instructions apply to the old project only.
+Keep new implementation files outside `past_repo/`. The historical dependencies and instructions apply to the old project only.
