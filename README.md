@@ -32,6 +32,6 @@ The complete history is organized in [handlings/README.md](handlings/README.md):
 - **Trial Two:** validated longer-horizon assembly and checkpoint restoration; held-out noise did not improve assembly.
 - **Trial Three:** neither timestep refinement nor bounded turning achieved temporal stability across speeds 1–5 BL/s.
 
-**Not ready for light yet.** The remaining issue is that one timestep controls both movement and social decision frequency. [NEXT_SOLUTION.md](handlings/NEXT_SOLUTION.md) proposes separate behavioural and physics timesteps; this proposal has not been implemented. The 16 trial notebooks retain their saved outputs, data and figures. Trial Two checkpoints belong to the previous protocol and are not final light checkpoints.
+The remaining issue is that one timestep controls both movement and social decision frequency.NEXT_SOLUTION.md proposes separate behavioural and physics timesteps; this proposal has not been implemented. The 16 trial notebooks retain their saved outputs, data and figures. Trial Two checkpoints belong to the previous protocol and are not final light checkpoints.
 
 The shared model and check helpers include the already tested optional controls used in those completed trials; the original checks retain their default configuration. No new scientific runs were performed during this reorganization.
