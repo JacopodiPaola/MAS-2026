@@ -22,7 +22,7 @@ Before adding light and implementing the visualization, we must ensure that the 
 - [`shiner_model.py`](shiner_model.py): the shared model used by every validation notebook.
 - [`checks/README.md`](checks/README.md): the index for checks 02–06, with recording tests, metric validation, multiple seeds and controls, collective-state summaries, diagnostic plots, results and references.
 
-### Current findings
+### Handling issues
 
 The early 62.5-s checks ended with disconnected groups in seeds 0 and 2. Longer tests showed that these groups needed more time: **30/30 reference runs assembled within 180 s**, with no observed breakup after assembly was confirmed. Low nearest-neighbour distance alone does not establish whole-group cohesion.
 
