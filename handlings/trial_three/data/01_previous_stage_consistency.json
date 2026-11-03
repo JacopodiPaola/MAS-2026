@@ -1,0 +1,60 @@
+{
+  "FreshCasesCompared": 30,
+  "PreviousStageCasesReusedForScientificRuns": 0,
+  "Checks": [
+    {
+      "Metric": "Polarization",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "Rotation",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "LargestGroupFraction",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "ConnectedTimeFraction",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "MeanNND",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "MeanDistanceToCentroid",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "MissedRepulsionPassesPerSecond",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "ExactOverlapPairs",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    },
+    {
+      "Metric": "MinimumRecordedPairDistance",
+      "MatchedCases": 30,
+      "MaximumAbsoluteDifference": 0.0,
+      "ExactlyEqual": true
+    }
+  ]
+}

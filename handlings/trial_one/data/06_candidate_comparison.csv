@@ -1,0 +1,6 @@
+Condition,Seeds,MeanLateLargestGroupFraction,MeanLateConnectedFraction,SeedsMeetingLateCohesion,PersistentSplitEvents,MeanPersistentFragmentedTimeFraction,MeanLatePolarization,FinalConnectedSeeds,MeetsSeedRobustnessConvention
+A — Baseline,10,0.9309,0.753,7,0,0.475,0.8723386378675198,8,False
+B — FOV only,10,0.8839500000000001,0.6060000000000001,5,1,0.5864,0.7930500935743503,7,False
+C — Turning only,10,0.885,0.7,7,1,0.5266,0.8275748837708278,7,False
+D — Noise only,10,0.9441,0.865,8,1,0.4614,0.8909199151868694,9,False
+E — Combined,10,0.8800000000000001,0.7,7,2,0.508,0.8343284619636673,7,False

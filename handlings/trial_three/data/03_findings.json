@@ -1,0 +1,114 @@
+{
+  "Formulation": "bounded social turns",
+  "MaxTurnRate_rad_s": 14.0,
+  "RateInterpretation": "Derived from 1.75 rad/reference update at 0.125 s; implementation scaling convention, not fitted rate",
+  "ScientificRuns": 120,
+  "Seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "Speeds": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "Dts": [
+    0.0625,
+    0.03125,
+    0.015625,
+    0.0078125
+  ],
+  "Duration_s": 31.25,
+  "RecordingInterval_s": 0.125,
+  "AcceptedCandidateDts": [],
+  "AnyCandidatePasses": false,
+  "ExactOverlapPairs": 0,
+  "TotalMissedRepulsionPasses": 128,
+  "MinimumRecordedPairDistance": 0.0038027765467334,
+  "RejectedComparisons": [
+    {
+      "Speed": 1.0,
+      "CandidateDt": 0.0625,
+      "FinerDt": 0.03125,
+      "FailedMetrics": "Polarization, Rotation, LargestGroupFraction, ConnectedTimeFraction, MeanNND, MeanDistanceToCentroid",
+      "CrossingRatePass": true,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 1.0,
+      "CandidateDt": 0.03125,
+      "FinerDt": 0.015625,
+      "FailedMetrics": "Rotation, MeanDistanceToCentroid",
+      "CrossingRatePass": true,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 1.0,
+      "CandidateDt": 0.015625,
+      "FinerDt": 0.0078125,
+      "FailedMetrics": "MeanDistanceToCentroid",
+      "CrossingRatePass": true,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 3.0,
+      "CandidateDt": 0.0625,
+      "FinerDt": 0.03125,
+      "FailedMetrics": "ConnectedTimeFraction, MeanDistanceToCentroid",
+      "CrossingRatePass": false,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 3.0,
+      "CandidateDt": 0.03125,
+      "FinerDt": 0.015625,
+      "FailedMetrics": "MeanDistanceToCentroid",
+      "CrossingRatePass": false,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 5.0,
+      "CandidateDt": 0.0625,
+      "FinerDt": 0.03125,
+      "FailedMetrics": "",
+      "CrossingRatePass": false,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 5.0,
+      "CandidateDt": 0.03125,
+      "FinerDt": 0.015625,
+      "FailedMetrics": "MeanDistanceToCentroid",
+      "CrossingRatePass": false,
+      "ExactOverlapPass": true
+    },
+    {
+      "Speed": 5.0,
+      "CandidateDt": 0.015625,
+      "FinerDt": 0.0078125,
+      "FailedMetrics": "ConnectedTimeFraction, MeanDistanceToCentroid",
+      "CrossingRatePass": true,
+      "ExactOverlapPass": true
+    }
+  ],
+  "InstantaneousCandidates": [],
+  "ComparisonAvailable": true,
+  "NoLightImplemented": true,
+  "Limits": [
+    "Ten matched seeds",
+    "31.25-second finite horizon",
+    "Only three tested speeds",
+    "Social turn cap excludes wall reflection",
+    "Missed-pass geometry excludes reflected paths",
+    "No finer reference below 0.0078125 seconds",
+    "Final assembly/checkpoint gates are separate"
+  ]
+}

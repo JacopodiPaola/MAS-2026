@@ -1,0 +1,23 @@
+{
+  "seeds_per_condition": 20,
+  "duration_s": 180.0,
+  "reference_assembled": 20,
+  "noise_assembled": 19,
+  "reference_censored": 0,
+  "noise_censored": 1,
+  "noise_only_assembly_pairs": 0,
+  "reference_only_assembly_pairs": 1,
+  "reference_postassembly_breakups": 0,
+  "noise_postassembly_breakups": 1,
+  "reference_censored_seeds": [],
+  "noise_censored_seeds": [
+    48
+  ],
+  "noise_breakup_seeds": [
+    36
+  ],
+  "reference_restricted_confirmation_mean_s": 39.88125,
+  "noise_restricted_confirmation_mean_s": 45.75625,
+  "adopt_noise": false,
+  "recommendation": "Retain reference; noise remains exploratory."
+}

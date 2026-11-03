@@ -1,7 +1,7 @@
-"""A deterministic, constant-speed 2D social baseline for the shiner checks.
+"""A constant-speed 2D social model with controlled pre-light extensions.
 
-The three social zones follow Couzin's raw-vector combination. Perception is
-360 degrees and turns are instantaneous; this is not a fitted fish model.
+Defaults retain the deterministic baseline: raw-vector social combination,
+360-degree perception and instantaneous turns. Optional changes are explicit.
 """
 
 import numpy as np
@@ -105,6 +105,13 @@ class GoldenShiners(ContinuousSpaceAgent):
             displacement = other.position - self.position
             distance = np.linalg.norm(displacement)
             if distance <= self.model.attraction_radius:
+                # Keep close-range repulsion omnidirectional (Couzin convention).
+                # The blind sector affects orientation and attraction only.
+                if distance >= self.model.repulsion_radius and self.model.fov_degrees < 360:
+                    cosine = np.dot(self.direction, displacement) / distance
+                    edge = np.cos(np.deg2rad(self.model.fov_degrees / 2))
+                    if cosine < edge - EPSILON:
+                        continue
                 neighbors.append((other, displacement, distance))
         return neighbors
 
@@ -168,9 +175,32 @@ class GoldenShiners(ContinuousSpaceAgent):
             social += self.attraction(neighbors)
         return unit_vector(social, self.direction)
 
+    def turn_toward(self, target):
+        """Apply optional angular error and a social turn limit before walls.
+
+        Error is 0.01 rad at reference dt=0.125 when enabled at that value.
+        Square-root dt scaling preserves variance per simulated second.
+        A rate of 14 rad/s recovers Puckett's 1.75 rad/update at reference dt.
+        Scaling away from the reference timestep is an implementation choice.
+        """
+        if self.model.angular_noise == 0 and self.model.max_turn_rate is None:
+            return target
+        old_angle = np.arctan2(self.direction[1], self.direction[0])
+        target_angle = np.arctan2(target[1], target[0])
+        delta = target_angle - old_angle
+        if self.model.angular_noise > 0:
+            sigma = self.model.angular_noise * np.sqrt(self.model.dt / 0.125)
+            delta += self.model.rng.normal(0, sigma)
+        delta = np.arctan2(np.sin(delta), np.cos(delta))
+        if self.model.max_turn_rate is not None:
+            limit = self.model.max_turn_rate * self.model.dt
+            delta = np.clip(delta, -limit, limit)
+        angle = old_angle + delta
+        return np.array([np.cos(angle), np.sin(angle)])
+
     def decide(self):
         """Plan without mutating any current position, heading or speed."""
-        direction = self.social_direction(self.get_neighbors())
+        direction = self.turn_toward(self.social_direction(self.get_neighbors()))
         position = self.position + direction * self.speed * self.model.dt
         self.next_position, self.next_direction = reflect(position, direction, self.model.bounds)
 
@@ -188,15 +218,25 @@ class GoldenShinersModel(mesa.Model):
         dt=0.125, repulsion_radius=0.5, orientation_radius=3.0,
         attraction_radius=5.5,
         enabled_rules=("repulsion", "orientation", "attraction"),
+        fov_degrees=360.0, max_turn_rate=None, angular_noise=0.0,
+        record_every=1,
     ):
         if isinstance(n_fish, bool) or not isinstance(n_fish, (int, np.integer)) or n_fish < 1:
             raise ValueError("n_fish must be a positive integer.")
+        if isinstance(record_every, bool) or not isinstance(record_every, (int, np.integer)) or record_every < 1:
+            raise ValueError("record_every must be a positive integer.")
         if not all(np.isfinite([width, height, speed, dt, repulsion_radius, orientation_radius, attraction_radius])):
             raise ValueError("Model parameters must be finite.")
         if width <= 0 or height <= 0 or speed < 0 or dt <= 0:
             raise ValueError("Width, height and dt must be positive; speed must be nonnegative.")
         if not 0 < repulsion_radius < orientation_radius <= attraction_radius:
             raise ValueError("Radii must satisfy 0 < repulsion < orientation <= attraction.")
+        if not np.isfinite(fov_degrees) or not 0 < fov_degrees <= 360:
+            raise ValueError("fov_degrees must be in (0, 360].")
+        if not np.isfinite(angular_noise) or angular_noise < 0:
+            raise ValueError("angular_noise must be finite and nonnegative.")
+        if max_turn_rate is not None and (not np.isfinite(max_turn_rate) or max_turn_rate < 0):
+            raise ValueError("max_turn_rate must be None or a finite nonnegative rate in rad/s.")
         self.enabled_rules = frozenset(enabled_rules)
         if not self.enabled_rules <= SOCIAL_RULES:
             raise ValueError("Unknown social rule in enabled_rules.")
@@ -207,6 +247,11 @@ class GoldenShinersModel(mesa.Model):
         self.repulsion_radius = float(repulsion_radius)
         self.orientation_radius = float(orientation_radius)
         self.attraction_radius = float(attraction_radius)
+        self.fov_degrees = float(fov_degrees)
+        self.max_turn_rate = max_turn_rate
+        self.angular_noise = float(angular_noise)
+        self.record_every = int(record_every)
+        self.recorded_steps = []
         self.space = ContinuousSpace(self.bounds, torus=False, random=self.random, n_agents=n_fish)
         for _ in range(n_fish):
             position = self.rng.random(2) * np.array([width, height])
@@ -223,12 +268,15 @@ class GoldenShinersModel(mesa.Model):
             },
         )
         self.datacollector.collect(self)
+        self.recorded_steps.append(self.steps)
 
     def record_state(self):
         self.metrics = compute_group_metrics(self)
         self.datacollector.collect(self)
+        self.recorded_steps.append(self.steps)
 
     def step(self):
         self.agents.do("decide")
         self.agents.do("advance")
-        self.record_state()
+        if self.steps % self.record_every == 0:
+            self.record_state()

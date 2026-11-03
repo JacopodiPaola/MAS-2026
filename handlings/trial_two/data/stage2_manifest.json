@@ -1,0 +1,52 @@
+{
+  "notebooks": [
+    {
+      "notebook": "01_long_horizon_assembly.ipynb",
+      "code_cells": 5,
+      "all_executed": true,
+      "errors": 0
+    },
+    {
+      "notebook": "02_timestep_refinement.ipynb",
+      "code_cells": 7,
+      "all_executed": true,
+      "errors": 0
+    },
+    {
+      "notebook": "03_assembly_definition.ipynb",
+      "code_cells": 4,
+      "all_executed": true,
+      "errors": 0
+    },
+    {
+      "notebook": "04_assembled_checkpoints.ipynb",
+      "code_cells": 4,
+      "all_executed": true,
+      "errors": 0
+    },
+    {
+      "notebook": "05_candidate_solutions.ipynb",
+      "code_cells": 6,
+      "all_executed": true,
+      "errors": 0
+    },
+    {
+      "notebook": "06_light_readiness_decision.ipynb",
+      "code_cells": 5,
+      "all_executed": true,
+      "errors": 0
+    }
+  ],
+  "scientific_runs": 115,
+  "recording_validation_runs": 4,
+  "checkpoint_continuation_branches": 90,
+  "reference_assembly_success": 30,
+  "reference_censored": 0,
+  "reference_postassembly_breakups": 0,
+  "checkpoints": 30,
+  "verdict": "NOT READY FOR LIGHT",
+  "model_sha256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+  "study_support_sha256": "b2cc4aeabbf3566f554846716235c8c445fc75c268645ebf4082496e5d0c5c1e",
+  "first_stage_files_preserved": true,
+  "light_implemented": false
+}

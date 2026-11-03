@@ -1,0 +1,5 @@
+Seed,Speed_BL_s,Updates,AllInternalStatesBitwiseEqual,RecordedDataExactlyEqual,RNGExactlyEqual
+0,1.0,100,True,True,True
+0,5.0,100,True,True,True
+2,1.0,100,True,True,True
+2,5.0,100,True,True,True

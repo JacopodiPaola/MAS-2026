@@ -1,0 +1,6 @@
+dt_s,MaxSocialTurnPerUpdate_rad,UpdatesPerSecond,MaximumTurnCapacity_rad_per_s
+0.125,1.75,8.0,14.0
+0.0625,0.875,16.0,14.0
+0.03125,0.4375,32.0,14.0
+0.015625,0.21875,64.0,14.0
+0.0078125,0.109375,128.0,14.0

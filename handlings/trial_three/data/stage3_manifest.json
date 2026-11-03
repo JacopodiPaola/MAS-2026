@@ -1,0 +1,37 @@
+{
+  "notebooks": [
+    {
+      "file": "01_instantaneous_turn_dt_refinement.ipynb",
+      "executed_code_cells": 7,
+      "errors": 0
+    },
+    {
+      "file": "02_turn_rate_implementation.ipynb",
+      "executed_code_cells": 8,
+      "errors": 0
+    },
+    {
+      "file": "03_turn_rate_dt_convergence.ipynb",
+      "executed_code_cells": 7,
+      "errors": 0
+    },
+    {
+      "file": "04_final_social_protocol.ipynb",
+      "executed_code_cells": 4,
+      "errors": 0
+    }
+  ],
+  "scientific_runs": 210,
+  "instantaneous_runs": 90,
+  "bounded_runs": 120,
+  "implementation_checks": 12,
+  "implementation_regression_model_runs": 10,
+  "final_validation_runs": 0,
+  "regenerated_checkpoints": 0,
+  "verdict": "NOT READY FOR LIGHT",
+  "shared_model_unchanged": true,
+  "model_sha256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+  "criteria_sha256": "651b4dcbdf0d32e46783b7d4c1bf6fa7fb44a7d051fdd3f64a68b74a1e9c87bb",
+  "temporal_support_sha256": "3cea6042a899b45bedd7f0e4392f4509b20c0c94c13734a7c250dd5e8e6db10a",
+  "light_implemented": false
+}

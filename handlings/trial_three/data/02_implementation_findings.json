@@ -1,0 +1,101 @@
+{
+  "AllChecksPassed": true,
+  "ChecksPassed": 12,
+  "ChecksTotal": 12,
+  "BackwardsCompatible": true,
+  "RecordingStrideValidated": true,
+  "SynchronousPlanningValidated": true,
+  "MaxSocialTurnRate_rad_s": 14.0,
+  "LiteratureReferenceMaxTurn_rad_update": 1.75,
+  "LiteratureReferenceDt_s": 0.125,
+  "ScalingStatus": "14 rad/s and dt scaling are our derived implementation convention, not a fitted literature parameter.",
+  "FOV_degrees": 360.0,
+  "AngularNoise_rad": 0.0,
+  "WallReflection": "Instantaneous hard-wall response remains outside the social turn cap.",
+  "OneSecondAccumulatedTurns": [
+    {
+      "dt_s": 0.125,
+      "Updates": 8,
+      "AccumulatedTurn_rad": 14.0,
+      "MaximumIncrement_rad": 1.7500000000000004
+    },
+    {
+      "dt_s": 0.0625,
+      "Updates": 16,
+      "AccumulatedTurn_rad": 14.0,
+      "MaximumIncrement_rad": 0.8750000000000001
+    },
+    {
+      "dt_s": 0.03125,
+      "Updates": 32,
+      "AccumulatedTurn_rad": 14.0,
+      "MaximumIncrement_rad": 0.43750000000000006
+    },
+    {
+      "dt_s": 0.015625,
+      "Updates": 64,
+      "AccumulatedTurn_rad": 14.0,
+      "MaximumIncrement_rad": 0.21875000000000006
+    },
+    {
+      "dt_s": 0.0078125,
+      "Updates": 128,
+      "AccumulatedTurn_rad": 14.0,
+      "MaximumIncrement_rad": 0.1093750000000001
+    }
+  ],
+  "DisabledBaselineRegression": [
+    {
+      "Seed": 0,
+      "Speed_BL_s": 1.0,
+      "Updates": 100,
+      "AllInternalStatesBitwiseEqual": true,
+      "RecordedDataExactlyEqual": true,
+      "RNGExactlyEqual": true
+    },
+    {
+      "Seed": 0,
+      "Speed_BL_s": 5.0,
+      "Updates": 100,
+      "AllInternalStatesBitwiseEqual": true,
+      "RecordedDataExactlyEqual": true,
+      "RNGExactlyEqual": true
+    },
+    {
+      "Seed": 2,
+      "Speed_BL_s": 1.0,
+      "Updates": 100,
+      "AllInternalStatesBitwiseEqual": true,
+      "RecordedDataExactlyEqual": true,
+      "RNGExactlyEqual": true
+    },
+    {
+      "Seed": 2,
+      "Speed_BL_s": 5.0,
+      "Updates": 100,
+      "AllInternalStatesBitwiseEqual": true,
+      "RecordedDataExactlyEqual": true,
+      "RNGExactlyEqual": true
+    }
+  ],
+  "RecordingStride": {
+    "InternalDt_s": 0.015625,
+    "RecordingInterval_s": 0.125,
+    "Duration_s": 10.0,
+    "Speed_BL_s": 5.0,
+    "Seed": 7,
+    "InternalUpdatesPerModel": 640,
+    "FullGroupRows": 641,
+    "SparseGroupRows": 81,
+    "FullFishRows": 12820,
+    "SparseFishRows": 1620,
+    "AllInternalStatesBitwiseEqual": true,
+    "RetainedGroupRowsExactlyEqual": true,
+    "RetainedFishRowsExactlyEqual": true,
+    "RNGExactlyEqual": true
+  },
+  "Interpretation": "Implementation checks pass. Practical temporal stability and light readiness remain separate decisions in notebooks 03 and 04.",
+  "FullModelPairedRegressionRuns": 8,
+  "FullModelRecordingStrideRuns": 2,
+  "ScientificCohortRuns": 0
+}

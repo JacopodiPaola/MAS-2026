@@ -1,0 +1,33 @@
+{
+  "scope": "Reorganization verification only; no scientific model instances or simulation steps executed.",
+  "original_files_accounted_for": 192,
+  "preservation": {
+    "notebooks_outputs_verified": 16,
+    "helpers_import_or_error_path_only": 2,
+    "byte_identical_including_archived_readmes": 174
+  },
+  "original_data_figures_manifests_checkpoints": "Byte-identical",
+  "notebook_saved_outputs_verified": 16,
+  "notebook_schema_and_code_syntax": "Passed",
+  "local_startups": {
+    "notebooks": 16,
+    "working_directories": 5,
+    "checks": 80,
+    "model_constructor_and_step": "Blocked"
+  },
+  "github_root_layout_startups": {
+    "notebooks": 16,
+    "working_directories": 4,
+    "checks": 64,
+    "model_constructor_and_step": "Blocked"
+  },
+  "cache_source_mappings_verified": 3,
+  "cached_csv_output_hashes_verified": 6,
+  "active_relative_links_verified_in_publication": 95,
+  "shared_model_sha256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+  "unassigned_original_files": [],
+  "multirate_implementation": "Not implemented",
+  "light_implementation": "Not implemented",
+  "scientific_status": "NOT READY FOR LIGHT",
+  "inventory_before_reorganization_sha256": "55af2906e38dadd0625002298eaa2d0f19636a43d82b4e0a58286785f6798e72"
+}

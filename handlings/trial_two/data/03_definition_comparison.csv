@@ -1,0 +1,4 @@
+Definition,Rule,Successes,SuccessFraction,Censored,ConditionalMedianOnset_s,ConditionalMedianConfirmation_s,LatestConfirmation_s
+A,One component for 2.5 s,30,1.0,0,28.5,31.0,89.25
+B,One component for 5 s,30,1.0,0,28.5,33.5,91.75
+C,Largest group fraction ≥0.95 for 5 s,30,1.0,0,17.625,22.625,91.75

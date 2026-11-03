@@ -58,3 +58,7 @@ The labels are descriptive. Their 0.35/0.65 boundaries come from experimental st
 - [Hein et al. (2015), *The evolution of distributed sensing and collective computation in animal populations*](https://doi.org/10.7554/eLife.10955): conceptual support and a different force/acceleration model for future comparison.
 
 Execution environment: Python 3.11.16, Mesa 3.2.0 and NumPy 2.4.6 in `mesa-env`. The suite validates this implementation and its stated operating conditions; it does not calibrate biological parameters.
+
+## Follow-up study before light
+
+The [three pre-light trials](../handlings/README.md) preserve the follow-up investigation of assembly, temporal resolution, optional perception/turning/noise settings and checkpoints. The checks in this folder retain their original default configuration. The later 180-s reference cohort assembled in 30/30 runs, but timestep sensitivity remains unresolved across the planned speed range. See the [proposed next solution](../handlings/NEXT_SOLUTION.md); it has not been implemented.

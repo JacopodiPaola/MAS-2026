@@ -1,0 +1,153 @@
+# School assembly and stability before light
+
+## Why this folder exists
+
+This folder separates two research questions. **Part 1 — school assembly:** can local social interactions bring randomly positioned and oriented fish into a connected school, and how long does that take? Random initialization remains an official experiment. **Part 2 — collective gradient sensing:** once social dynamics have assembled a school, can a later local scalar-light response produce collective sensing? That later comparison should use exactly the same saved assembled state for its control and light condition.
+
+The folder was renamed from `fragmentation_issue_handling` because the original apparent fragmentation issue is primarily a **failure-to-assemble issue within the observed horizon**, not demonstrated breakup of an established whole school. All first-stage notebooks, numerical outputs, figures and data remain here. Their original README text is preserved as a [historical snapshot](data/stage1_README_snapshot.txt).
+
+The [shared model](../shiner_model.py) retains 2D dynamics, local repulsion/orientation/attraction, repulsion priority and synchronous decide/advance. No global cohesion force, centroid navigation, attraction-radius tuning or light response was added. Diagnostics remain observers. The first-stage reference has constant speed 1 BL/s, dt=0.125 s, 360° perception, instantaneous social turns and zero angular noise.
+
+## Stage 1 — Initial fragmentation/assembly diagnosis
+
+### Connectivity and seed 0 / seed 2 findings
+
+Seed 0 starts **18+2** and ends **10+10**. Seed 2 starts **19+1** and ends **19+1**. Neither forms a connected whole during the observed **62.5 s**. Seed 1 is connected throughout. The other seven seeds first assemble after **7.625–56 s**.
+
+Across all ten baseline seeds, no fragmented record occurs after first whole-group cohesion. Thus the two problematic final frames are not evidence of a previously connected whole school breaking apart. Seed 0 still changes subgroup composition, so this global diagnosis does not exclude fission or merging among subgroups. Component lineage tracking would be needed for that finer question.
+
+Known artificial configurations demonstrate the limitation of MeanNND directly: one group and two separated groups can both have MeanNND **0.2 BL**, while largest-group fractions are 1 and 0.5. Connectivity instrumentation preserves the original baseline records exactly.
+
+### Wall findings
+
+Translating the same initial geometry into a 40×40 arena reduces reflected-fish steps per second:
+
+| Seed | 20×20 | 40×40 | Final components, small → large arena |
+|---|---:|---:|---|
+| 0 | 9.680 | 3.648 | 10+10 → 10+10 |
+| 2 | 2.112 | 0.784 | 19+1 → 15+5 |
+| 1 | 1.408 | 0.784 | 20 → 20 |
+
+Seeds 0 and 2 remain disconnected throughout both experiments. Their initial disconnection precedes any simulated reflection; there is no observed connected-to-fragmented onset to attribute to a wall impact. Outcomes can still depend on wall and arena context. The larger arena changes available travel space and nominal density, and the intervention tests only three seeds. It is not proof that walls never cause fragmentation.
+
+### Timestep findings
+
+All 30 timestep runs use the same **31.25 s**, with speeds 1 and 5 BL/s and dt = 0.125, 0.0625 and 0.03125 s. At 5 BL/s:
+
+| dt (s) | Travel/update (BL) | Mean missed passes/s | Mean late polarization |
+|---:|---:|---:|---:|
+| 0.125 | 0.6250 | 11.4048 | 0.4760 |
+| 0.0625 | 0.3125 | 1.0368 | 0.7854 |
+| 0.03125 | 0.15625 | 0.0896 | 0.9447 |
+
+No exact overlaps were recorded, yet a controlled head-on probe crosses the entire repulsion encounter at the coarsest timestep. Finer updates observe the close encounter. Zero endpoint overlap therefore does not establish adequate interaction resolution.
+
+The finest step reduces missed passes substantially but does not eliminate them or demonstrate timestep independence. Connectivity and order also change with dt at speed 1. Because the baseline updates instantaneous social decisions more frequently as dt decreases, this is sensitivity of the implemented model, not a formal ODE-convergence test. Cohesion alone is especially misleading here: coarser high-speed runs can look more connected while missing far more interactions.
+
+### FOV, turning and noise findings
+
+These 62.5-s runs use the same ten seeds and change one setting at a time before testing the combination:
+
+| Condition | Mean late largest-group fraction | Final connected seeds | Seeds meeting the full late-cohesion screen |
+|---|---:|---:|---:|
+| Baseline | 0.93090 | 8/10 | 7/10 |
+| FOV only | 0.88395 | 7/10 | 5/10 |
+| Turning only | 0.88500 | 7/10 | 7/10 |
+| Noise only | 0.94410 | 9/10 | 8/10 |
+| Combined | 0.88000 | 7/10 | 7/10 |
+
+Angular noise modestly improves these aggregate measures. The combined setting reconnects seeds 0 and 2 by the final frame but creates other failures. Choosing a configuration using only those two seeds would overfit the diagnosis. No tested condition meets the study's full 9/10 late-cohesion screen.
+
+The tested FOV is 270° for orientation and attraction, with close repulsion kept omnidirectional following the chosen Couzin convention. The turn limit is **1.75 rad/update at dt=0.125**, represented as a derived rate of 14 rad/s for controlled timestep scaling. Angular error is 0.01 rad at that reference timestep, scaled as sqrt(dt/0.125) to preserve variance per physical time. These off-reference scaling rules and the separation of hard wall reflection from social turning are explicit implementation choices. Controlled visibility, turn, noise and repeatability checks passed.
+
+
+## Revised interpretation
+
+In the original ten baseline runs, **no whole-group breakup was observed after first complete assembly** over the recorded 62.5 s. Seeds 0 and 2 **did not assemble within that horizon**; the evidence never justified saying they could never assemble. The other seven initially disconnected baseline seeds first connected at 7.625–56 s, while seed 1 was connected initially.
+
+The project therefore retains random starts and measures rapid assembly, delayed assembly, right-censored non-assembly and post-assembly stability separately. MeanNND must be read alongside NumberOfGroups, LargestGroupFraction, MeanDistanceToCentroid and component sizes. A geometric component measures potential local connectivity, not biological realism or a subgroup lineage.
+
+Formation-time variability has conceptual precedent in [Hein et al. (2015), Appendix 5.4 and Figures 11–12](https://elifesciences.org/articles/10955): their different interaction model measures nucleation from random starts. This motivates testing longer horizons; it does not predict or validate our numerical assembly times.
+
+## Stage 2 — Second handling
+
+The complete second-stage guide, protocols and outputs are in [second_handling/README.md](second_handling/README.md). Every notebook was executed from a fresh kernel.
+
+| Notebook | Experiment |
+|---|---|
+| [01 — Long-horizon assembly](second_handling/01_long_horizon_assembly.ipynb) | 30 random-start reference seeds, 180 s, efficient traces with assembly monitored every internal step. |
+| [02 — Timestep refinement](second_handling/02_timestep_refinement.ipynb) | 45 matched runs: five seeds × speeds 1/3/5 × dt 0.0625/0.03125/0.015625 over the same 31.25 s. Separate recording-stride validation. |
+| [03 — Assembly definition](second_handling/03_assembly_definition.ipynb) | Compare one component for 2.5 or 5 s against largest-group fraction ≥0.95 for 5 s. |
+| [04 — Assembled checkpoints](second_handling/04_assembled_checkpoints.ipynb) | Validate 30 saved states, exact original continuations and paired controls. |
+| [05 — Candidate solutions](second_handling/05_candidate_solutions.ipynb) | Compare longer horizons, finer updates and checkpoint design; 40 held-out reference/noise runs. |
+| [06 — Light-readiness decision](second_handling/06_light_readiness_decision.ipynb) | Combine the executed evidence and report an explicit readiness verdict. |
+
+### Long-horizon assembly
+
+All **30/30** main-cohort runs meet persistent assembly by 180 s: three are initially connected and all **27/27 initially disconnected** populations assemble. There are **zero censored seeds** in this cohort at 180 s. Onset median is **28.5 s**, IQR **13.1875–55.125 s**, and range **0–86.75 s**. Confirmation requires another 5 s. Seeds 0 and 2 assemble at **86.75 s** and **73.875 s**, with confirmation at 91.75 s and 78.875 s. Extending the observation adds six confirmed successes relative to 62.5 s in this 30-seed cohort.
+
+No main-cohort run breaks apart after confirmation during **88.25–175 s** of remaining follow-up. This is finite-horizon stability in the tested sample, not a claim of permanent assembly or a universal success rate.
+
+### Timestep refinement
+
+The candidate dt=0.03125 s does **not** pass the predeclared practical comparison against 0.015625 s across the intended speed range. The screen checks both ensemble-mean and matched-seed changes: ≤10% for polarization, MeanNND and group spread, ≤0.05 absolute largest-group fraction, and missed passes ≤0.01/model/s. These are diagnostic choices, not biological constants or a formal convergence theorem.
+
+At speed 1, MeanNND changes about **24.85%**, and paired group spread about **24.79%**. At speed 3, all four metric criteria fail. At speed 5, ensemble polarization differs only about **0.25%**, but mean group spread differs **17.49%** between ensembles and **30.35%** using paired absolute differences. Similar polarization alone is insufficient.
+
+At speed 5, missed repulsion passes decrease from **0.0896/s to 0.0192/s** (14 to 3 events over five matched 31.25-s runs). The remaining finest-step misses are shallow: minimum missed separation is approximately **0.4984 BL**, close to the 0.5-BL cutoff. These are geometric missed-zone encounters, not demonstrated body collisions. No exact sampled overlaps were observed. The finest tested step is a comparison reference, not a proven limit.
+
+Internal simulation dt and recording interval are now explicit separate settings. At dt=0.03125, recording every four updates gives 0.125-s output spacing. Baseline and noisy validation pairs have **bitwise identical internal trajectories**, and retained group/fish records match at shared steps. Saving fewer records improves storage, not the physical resolution.
+
+### Assembly definition
+
+Use **one connected component continuously for at least 5 simulated seconds**, monitored at every internal update. This is an operational convention, not a biological constant. Definitions A (2.5 s) and B (5 s) give the same success and onset results in this cohort, with different confirmation times. Definition C (largest fraction ≥0.95 for 5 s) advances onset in five seeds and can accept 19+1; it is not a whole-population assembly definition.
+
+AssemblyTime is the observed onset of the first episode that later meets persistence. Checkpoints are captured at confirmation, not retrospectively. Runs without sufficient qualifying follow-up would be right-censored, never labelled permanently unable to assemble.
+
+### Checkpoint creation
+
+All **30 assembled checkpoints** pass exact state/parameter/RNG restoration, the next **16 original continuation steps**, and paired **64-step** control trajectories. The format includes seed, absolute step/time, positions, headings, speeds, IDs, model parameters, dt and both random-generator states.
+
+The states are generated by social dynamics at their first qualifying confirmation, not selected for later attractive behaviour. They support the intended future design: random assembly → persistent connection → saved state → identical starting state for control and light. Existing checkpoints use dt=0.125 at speed 1; regenerate them under the final accepted numerical protocol before light comparisons. A saved social state does not restore all previous DataCollector history. A future environmental experiment should define time relative to its checkpoint while retaining assembly-time metadata.
+
+### Candidate solutions and held-out noise
+
+Longer observation resolves the initial horizon-censoring issue without altering the social model. Finer updates address numerical encounter resolution but still require refinement evidence. Checkpoints address experimental comparability, not assembly dynamics or numerical accuracy. These approaches solve different problems and are complementary.
+
+The earlier apparent noise advantage does **not** replicate as a general benefit on held-out seeds 30–49. By 180 s, the reference assembles **20/20** and noise assembles **19/20**. Noisy seed 48 is right-censored (final 14+6), and noisy seed 36 has one post-assembly breakup. Mean restricted confirmation time is **39.88 s reference** versus **45.76 s noise**. This exploratory sample does not justify adopting angular noise or establish a universal detrimental effect.
+
+### Light-readiness decision
+
+**NOT READY FOR LIGHT.** Assembly and checkpoint infrastructure are supported; the candidate internal timestep is not sufficiently robust over speeds 1–5 under the declared tests. Retain the deterministic reference as a control. Do not silently switch defaults to noise or the finest-looking trajectory.
+
+Next, resolve the temporal-response/update convention and further numerical refinement, then test the accepted protocol over the intended speed range and regenerate assembled checkpoints. No light behaviour was implemented. The machine-readable verdict is in [06_light_readiness_decision.json](second_handling/data/06_light_readiness_decision.json).
+
+## Current interpretation
+
+The long-horizon evidence now supports delayed assembly, rather than structural inability to assemble, for the originally problematic seeds. Once confirmed, reference schools remain connected over the tested follow-up. This makes random-start assembly a meaningful Part 1 and assembled-checkpoint comparisons a justified design for Part 2.
+
+The most serious remaining blocker is temporal resolution. With instantaneous social decisions, decreasing dt also increases decision frequency; it is not merely a more accurate solver of an unchanged continuous model. Metric sensitivity, not just visual cohesion or exact-overlap counts, must guide the next protocol decision.
+
+## Limitations
+
+- Finite explicit seed sets and horizons; zero observed censoring or breakup does not imply zero probability.
+- Long simulations have computational cost; streamed diagnostics retain every-update event monitoring while saving compact traces.
+- Connectivity is a distance-based diagnostic and does not establish biological schooling or empirical agreement.
+- No subgroup lineage tracking or calibration to empirical assembly-time distributions.
+- Timestep/decision-frequency sensitivity and a small refinement sample remain unresolved.
+- Random initialization is deliberate; checkpoint conditioning does not replace it.
+- Current checkpoint validation is specific to its stored model/numerical protocol.
+- With sparse recording, `model.metrics` is the last recorded snapshot; use `compute_group_metrics(model)` for the current state. `recorded_steps` maps DataCollector group row numbers to internal steps. The original full-history `audit_run` is not a resumed-checkpoint-history validator.
+
+## References
+
+- [Couzin et al. (2002)](https://doi.org/10.1006/jtbi.2002.3065): local social interactions and collective emergence.
+- [Hein et al. (2015)](https://elifesciences.org/articles/10955): conceptual motivation for random-start formation/nucleation time in a different model.
+- [Puckett et al. (2018)](https://doi.org/10.1038/s41598-018-26037-9): shiner social parameters and the future speed range; off-reference scaling remains explicit.
+- [Katz et al. (2011)](https://doi.org/10.1073/pnas.1107583108): empirical interactions and explicit alignment as a modelling assumption.
+- [Tunstrøm et al. (2013)](https://doi.org/10.1371/journal.pcbi.1002915): order measurements and interpretation of collective states.
+- [Berdahl et al. (2013)](https://doi.org/10.1126/science.1225883): motivation for the later local scalar-light response, which remains unimplemented.
+
+## Stage 3 — Temporal-resolution follow-up
+
+The [third handling study](third_handling_temporal_resolution/README.md) executed90 instantaneous-turn and120 bounded-turn cases with ten matched seeds, equal physical durations, fixed criteria and fresh-kernel outputs. All12 controlled turn/recording checks passed. Neither temporal formulation passed the all-speed practical-stability criteria, even though finest-step missed-pass counts reached zero in these samples. The conditional final30-seed cohort and new checkpoints were therefore not run. The current verdict remains **NOT READY FOR LIGHT**; the previous assembly and checkpoint evidence remains valid for its stored reference protocol.

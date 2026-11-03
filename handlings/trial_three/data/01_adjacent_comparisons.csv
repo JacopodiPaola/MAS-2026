@@ -1,0 +1,7 @@
+Speed,CandidateDt,FinerDt,Seeds,MetricsPass,FailedMetrics,CandidateMissedPassRate,FinerMissedPassRate,CrossingRateNonIncreasing,CrossingRatePass,ExactOverlapPass,Pass
+1.0,0.03125,0.015625,10,False,"Polarization, ConnectedTimeFraction, MeanNND, MeanDistanceToCentroid",0.0,0.0,True,True,True,False
+1.0,0.015625,0.0078125,10,False,"ConnectedTimeFraction, MeanDistanceToCentroid",0.0,0.0,True,True,True,False
+3.0,0.03125,0.015625,10,False,"MeanNND, MeanDistanceToCentroid",0.019200000000000002,0.009600000000000001,True,False,True,False
+3.0,0.015625,0.0078125,10,False,"Polarization, Rotation, ConnectedTimeFraction, MeanDistanceToCentroid",0.009600000000000001,0.0,True,True,True,False
+5.0,0.03125,0.015625,10,False,ConnectedTimeFraction,0.09280000000000001,0.016,True,False,True,False
+5.0,0.015625,0.0078125,10,False,MeanDistanceToCentroid,0.016,0.0,True,False,True,False

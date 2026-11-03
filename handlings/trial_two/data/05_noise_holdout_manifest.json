@@ -1,0 +1,44 @@
+{
+  "configuration": {
+    "seeds": [
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49
+    ],
+    "duration_s": 180.0,
+    "speed_BL_s": 1.0,
+    "dt_s": 0.125,
+    "record_interval_s": 1.0,
+    "conditions": {
+      "Reference": 0.0,
+      "Angular noise 0.01": 0.01
+    },
+    "assembly_definition": "one connected component for at least 5 simulated seconds"
+  },
+  "source_sha256": {
+    "shiner_model.py": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+    "school_assembly_and_stability/second_handling/study_support.py": "b2cc4aeabbf3566f554846716235c8c445fc75c268645ebf4082496e5d0c5c1e",
+    "school_assembly_and_stability/diagnostics.py": "4a1842f2edcd10c73a33fa9c6b661eb215ed141b80691d1fd0331a85c65ce4ac"
+  },
+  "summary_sha256": "de29c08bde6f485c693257e79d7eb42e8347724e02b9a02ae11c1921e0058a35",
+  "trace_sha256": "9bd13ceb266d2fd7579360b0e580d3105031151de5a147a93f7c9f9094aa636f",
+  "simulation_count": 40,
+  "provenance": "Executed from random initialization; no trajectory selection or early stopping."
+}

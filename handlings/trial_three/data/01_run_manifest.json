@@ -1,0 +1,47 @@
+{
+  "CacheKey": "f3de1470b12b8059672029da5dd6cf06b6cbc8d69fe237bf5985512bf8d4f23a",
+  "Config": {
+    "Seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "Speeds": [
+      1.0,
+      3.0,
+      5.0
+    ],
+    "Timesteps": [
+      0.03125,
+      0.015625,
+      0.0078125
+    ],
+    "Duration_s": 31.25,
+    "RecordingInterval_s": 0.125,
+    "LateWindow_s": 12.5,
+    "max_turn_rate": null,
+    "fov_degrees": 360.0,
+    "angular_noise": 0.0
+  },
+  "SourceSHA256": {
+    "shiner_model.py": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+    "school_assembly_and_stability/second_handling/study_support.py": "b2cc4aeabbf3566f554846716235c8c445fc75c268645ebf4082496e5d0c5c1e",
+    "school_assembly_and_stability/third_handling_temporal_resolution/temporal_support.py": "3cea6042a899b45bedd7f0e4392f4509b20c0c94c13734a7c250dd5e8e6db10a",
+    "school_assembly_and_stability/third_handling_temporal_resolution/data/predeclared_criteria.json": "651b4dcbdf0d32e46783b7d4c1bf6fa7fb44a7d051fdd3f64a68b74a1e9c87bb"
+  },
+  "ScientificRuns": 90,
+  "FreshScientificRuns": 90,
+  "ReusedPreviousStageCases": 0,
+  "WallClockSeconds": 144.97630508299335,
+  "OutputSHA256": {
+    "01_case_summary.csv": "6589296f87f33c13c7b3f83b9769de30effe318e1ef92c7a9ebf8d1197fd17a6",
+    "01_sampled_traces.csv": "4403254732765916be313cf364ed44bfe653acd6660d3bc47dab5b1994f5c5bc"
+  }
+}

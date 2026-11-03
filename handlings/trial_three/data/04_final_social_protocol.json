@@ -1,0 +1,34 @@
+{
+  "Verdict": "NOT READY FOR LIGHT",
+  "LightImplemented": false,
+  "ScientificRuns": 210,
+  "InstantaneousRuns": 90,
+  "BoundedRuns": 120,
+  "SelectedProtocol": null,
+  "TemporalCandidate": null,
+  "FinalValidationRuns": 0,
+  "Assembled": null,
+  "Censored": null,
+  "PostAssemblyBreakupRuns": null,
+  "RegeneratedCheckpoints": 0,
+  "Gates": {
+    "TemporalStability": false,
+    "Assembly": null,
+    "PostAssemblyStability": null,
+    "CheckpointRestoration": null,
+    "RecordingIndependent": true
+  },
+  "CandidateTables": [
+    {
+      "Formulation": "Instantaneous",
+      "AcceptedCandidates": [],
+      "MaxTurnRate": null
+    },
+    {
+      "Formulation": "Bounded 14 rad/s",
+      "AcceptedCandidates": [],
+      "MaxTurnRate": 14.0
+    }
+  ],
+  "Interpretation": "Practical matched-cohort stability conventions, not formal convergence or proof of biological realism."
+}

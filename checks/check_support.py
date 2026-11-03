@@ -35,6 +35,7 @@ def controlled_model(positions, directions, **kwargs):
         model_reporters=model.datacollector.model_reporters,
         agent_reporters=model.datacollector.agent_reporters,
     )
+    model.recorded_steps = []
     model.record_state()
     return model
 
@@ -44,9 +45,12 @@ def audit_run(model):
     group = model.datacollector.get_model_vars_dataframe()
     fish = model.datacollector.get_agent_vars_dataframe()
     n = len(model.agents)
-    assert group.shape == (model.steps + 1, 8)
-    assert fish.shape == ((model.steps + 1) * n, 5)
-    assert list(group.index) == list(range(model.steps + 1))
+    recorded = list(range(0, model.steps + 1, model.record_every))
+    assert model.recorded_steps == recorded
+    assert group.shape == (len(recorded), 8)
+    assert fish.shape == (len(recorded) * n, 5)
+    assert list(group.index) == list(range(len(recorded)))
+    assert list(fish.index.get_level_values("Step").unique()) == recorded
     assert fish.index.is_unique
     assert fish.groupby(level="Step").size().eq(n).all()
     assert np.isfinite(fish.to_numpy()).all()

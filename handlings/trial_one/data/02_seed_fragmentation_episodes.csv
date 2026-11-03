@@ -1,0 +1,3 @@
+Seed,StartStep,EndStep,StartTime,EndTime,Duration_s,FromConnected,RightCensored,Persistent,SizesAtStart,Reconnected,Origin,OnsetLowerBound_s
+0,1,500,0.125,62.5,62.5,False,True,True,18+2,False,Initial disconnected state,
+2,1,500,0.125,62.5,62.5,False,True,True,19+1,False,Initial disconnected state,

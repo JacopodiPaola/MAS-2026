@@ -1,0 +1,13 @@
+{
+  "validated_checkpoints": 30,
+  "all_state_roundtrips_exact": true,
+  "all_original_continuations_exact": true,
+  "all_paired_controls_exact": true,
+  "source_dt": [
+    0.125
+  ],
+  "paired_control_updates": 64,
+  "selection": "All first strict five-second confirmations",
+  "light_implemented": false,
+  "limitation": "Reference-dt checkpoint infrastructure; regenerate under a final validated numerical protocol."
+}

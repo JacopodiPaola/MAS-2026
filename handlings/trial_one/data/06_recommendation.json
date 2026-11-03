@@ -1,0 +1,16 @@
+{
+  "RecommendedControl": {
+    "speed": 1.0,
+    "dt": 0.125,
+    "fov_degrees": 360,
+    "max_turn_rate": null,
+    "angular_noise": 0.0
+  },
+  "Recommendation": "Retain the unchanged baseline as the comparison control; do not promote a light-ready baseline yet.",
+  "ReadyForLight": false,
+  "Reason": "Unresolved assembly, timestep/decision-frequency sensitivity and incomplete joint high-speed extension validation.",
+  "MeanMissedPassesPerSecondAtSpeed5": {
+    "dt_0.125": 11.4048,
+    "dt_0.03125": 0.0896
+  }
+}

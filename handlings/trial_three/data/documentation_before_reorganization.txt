@@ -1,0 +1,100 @@
+# Third handling — temporal resolution
+
+## Why this stage exists
+
+Stage 2 established persistent assembly for 30/30 reference random-start runs within 180 s, no censoring and no post-confirmation breakups over the observed follow-up. Checkpoint restoration was exact. Those findings remain evidence for that specific reference protocol, not for any new timestep or turning formulation.
+
+The remaining issue is temporal resolution before the future speed range reaches 5 BL/s. At high speed, coarse updates can cross the repulsion range between samples. Meanwhile, smaller dt in the instantaneous-turn model also allows more complete social direction changes per simulated second. Thus dt changes numerical encounter resolution and the implemented behavioural response.
+
+No prior evidence was overwritten, no model classes were duplicated, and no light was added. All notebooks import the existing [shared model](../../shiner_model.py) and the streamed observer helper from Stage 2. The bounded option already existed; this stage reuses it and strengthens validation rather than silently changing defaults.
+
+## Hypotheses
+
+**A — instantaneous turning:** further refinement might produce sufficiently similar aggregate behaviour. Test dt=.03125/.015625/.0078125, speeds1/3/5, ten matched seeds and equal31.25-s horizons.
+
+**B — bounded social turning:** a fixed physical angular capacity might give a more interpretable response and better practical stability. Test 14 rad/s at dt=.0625/.03125/.015625/.0078125, with the same speeds, seeds and physical duration. Both arms retain 360° FOV, zero angular noise, the same local social radii, synchronous updates and reflecting walls.
+
+Puckett reports 1.75 rad per update at dt=.125. Dividing by .125 to obtain **14 rad/s**, and scaling the cap as `14 * dt`, is our explicit implementation convention, not a fitted literature rate. Hard-wall reflection remains a separate instantaneous response outside that social cap.
+
+## Experiments
+
+| Notebook | Executed work |
+|---|---|
+| [01 Instantaneous refinement](01_instantaneous_turn_dt_refinement.ipynb) | 90 fresh cases, aggregate and matched-seed metrics, adjacent-dt tables and encounter diagnostics. |
+| [02 Turn-rate implementation](02_turn_rate_implementation.ipynb) | 12 known-answer checks; None backwards compatibility, wraparound, units, normalization, synchrony and recording independence. |
+| [03 Bounded refinement](03_turn_rate_dt_convergence.ipynb) | 120 fresh cases at four dt values, compared with the instantaneous arm using the same criteria. |
+| [04 Final protocol](04_final_social_protocol.ipynb) | Recomputed eligibility, conditional validation logic and final readiness verdict. No final cohort was run because no temporal candidate passed. |
+
+All four notebooks executed from fresh kernels and have saved outputs. Heavy experiment caches are transparent and validated against design, source and output hashes; raw case summaries and compact traces remain in [data/](data/). Figures are in [figures/](figures/). All 210 scientific cases were actually simulated; a short timing pilot and ten implementation-validation model runs are separate from that count.
+
+## Predeclared practical criteria
+
+The [criteria JSON](data/predeclared_criteria.json) was saved before the experiments. Primary decisions compare matched-cohort **ensemble means** for adjacent dt values:
+
+- Polarization, rotation, largest-group fraction and connected-time fraction: absolute change ≤.05.
+- MeanNND and mean distance to centroid: relative change ≤10%. Near-zero distance references use the declared absolute fallback, not an unstable division.
+- Both candidate and finer mean missed-pass rates ≤.01/model/s; zero sampled exact overlaps in the two cohorts.
+- A candidate must pass at all three speeds and every finer available adjacent comparison. This avoids choosing an accidental agreement at one pair.
+
+Raw values, paired-seed absolute changes and rate trends are reported. Paired trajectories are not required to be identical: long trajectories can be sensitive. These are project decision conventions, not biological constants, statistical significance tests or a formal convergence theorem. Ten seeds and one finite horizon limit inference.
+
+The common output interval is .125 s and the late metric window is the last12.5 s. Whole-horizon connected-time fraction and every-update encounter/assembly diagnostics remain distinct from these late averages.
+
+## Results
+
+### Implementation is correct in the controlled tests
+
+All **12/12 checks** passed. The `max_turn_rate=None` path preserves previous trajectories, records and RNG states exactly. Wraparound and clockwise/counterclockwise clipping work. Total maximum social turning is 14 rad over one physical second at all five tested dt values.
+
+At internal dt=.015625, recording every eighth update gives .125-s output. Over 640 internal updates, full recording has641 group rows versus81 sparse rows. Every internal state, retained group/fish row and RNG state matches exactly. Recording cadence is not the source of the dynamics differences.
+
+### Hypothesis A: instantaneous turning does not pass
+
+The finest comparison is .015625 → .0078125:
+
+| Speed (BL/s) | Relative change in mean centroid distance | Additional failed criteria |
+|---:|---:|---|
+| 1 | 37.08% | Connected-time fraction: absolute change .07410 |
+| 3 | 52.31% | P .06393; R .05095; connected-time fraction .052675 |
+| 5 | 27.37% | None additional |
+
+No instantaneous candidate passes across all speeds. Missed passes/model/s across .03125 → .015625 → .0078125 are 0→0→0 at speed1, .0192→.0096→0 at speed3, and .0928→.0160→0 at speed5. Zero detected finest-step encounters does not make the aggregate measurements stable.
+
+Thirty overlapping conditions were freshly rerun and exactly reproduce nine Stage-2 measurements, supporting cross-stage consistency without reusing those runs as the new cohort.
+
+### Hypothesis B: bounded turning also does not pass
+
+For .015625 → .0078125:
+
+| Speed (BL/s) | Failed finest-pair criteria |
+|---:|---|
+| 1 | Mean centroid distance: 2.225382→2.546543 BL, relative change12.61% |
+| 3 | All criteria pass |
+| 5 | Mean centroid distance: 1.063108→1.383269 BL, relative change23.15%; connected-time fraction .822100→.659875, change .162225 |
+
+Only1/9 complete bounded speed/pair comparisons passes, and no candidate satisfies the all-speed chain rule. At speed5, bounded missed-pass rates decrease **.304→.0416→.0032→0** across the four timesteps. Bounded turning has a clear physical rate and improves some comparisons, but it is not a uniform solution to practical temporal sensitivity.
+
+All cases have zero sampled exact overlaps. Nevertheless the minimum sampled pair separation anywhere in the bounded cohort is only .00380 BL. The model uses point-like agents and soft behavioural repulsion; zero exact coincidences and the restricted straight-path detector are not a hard-body collision-avoidance guarantee. Reflected segments are excluded from missed-pass counts.
+
+## Final social protocol
+
+**No new protocol is accepted.** The existing deterministic reference remains available, but neither temporal formulation is promoted to an official light protocol. No accepted internal dt is assigned merely because it is the smallest tested.
+
+Following the conditional rule, the final30-seed×180-s cohort was **not run**, and **zero checkpoints were regenerated**. These are untested gates, not evidence of failed assembly under the two new formulations. The previous 30/30 assembly result is not transferred automatically. All earlier checkpoint files remain untouched and retain their stored protocol.
+
+The numerical and response formulation needs a further decision before a light-ready protocol can be selected. Possible contributors include hard social-zone switches, boundary events and finite-cohort/trajectory sensitivity. These experiments measure the disagreement but do not isolate its cause. A focused localization and uncertainty analysis is preferable to silently relaxing thresholds, tuning cohesion parameters, or assuming that another halving will necessarily resolve it.
+
+## Light readiness
+
+**NOT READY FOR LIGHT.**
+
+- Controlled turning, backwards compatibility and recording independence: passed.
+- Practical temporal stability across speeds1–5: not passed.
+- Final new-protocol assembly/stability cohort: not executed, because the prerequisite failed.
+- Official regenerated checkpoints and restoration for that protocol: not executed.
+
+The machine-readable decision is [04_final_social_protocol.json](data/04_final_social_protocol.json). No LightField, light measurement, speed modulation, environmental noise or gradient-performance metric was implemented. The study stops at this result for review.
+
+## References and scope
+
+[Couzin et al. (2002)](https://doi.org/10.1006/jtbi.2002.3065) motivates local social zones and synchronous decisions. [Puckett et al. (2018)](https://doi.org/10.1038/s41598-018-26037-9) and its [supplement](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-018-26037-9/MediaObjects/41598_2018_26037_MOESM1_ESM.pdf) provide the reference turning increment and speed range. The 14-rad/s conversion and the practical stability criteria are implementation/project conventions. [Tunstrøm et al. (2013)](https://doi.org/10.1371/journal.pcbi.1002915) motivates order measurements, which are not a substitute for connectivity. The current tests do not calibrate biological fish behaviour or establish formal mathematical convergence.

@@ -24,8 +24,14 @@ Before adding light and implementing the visualization, we must ensure that the 
 
 ### Current findings
 
-In `04_schooling_across_seeds.ipynb`, we found that the social model does not always produce one connected school. In seed 0, the group ended as two disconnected groups of 10 + 10 fish, while seed 2 ended as 19 + 1. This also showed that a low mean nearest-neighbour distance is not enough to guarantee whole-group cohesion, because fish can be close to neighbours inside separate subgroups.
+The early 62.5-s checks ended with disconnected groups in seeds 0 and 2. Longer tests showed that these groups needed more time: **30/30 reference runs assembled within 180 s**, with no observed breakup after assembly was confirmed. Low nearest-neighbour distance alone does not establish whole-group cohesion.
 
-Our main hypothesis is that this fragmentation could either be a meaningful emergent result of local social interactions, or an artefact caused by modelling and numerical choices such as wall interactions, timestep size, 360° perception, instantaneous turning, or the absence of social noise.
+The complete history is organized in [handlings/README.md](handlings/README.md):
 
-For this reason, before adding light, we created the `fragmentation_issue_handling` folder. There we test connectivity explicitly, diagnose the problematic seeds, check wall effects, test timestep sensitivity at the future maximum speed, evaluate perception/turning/noise assumptions, and finally choose a justified social baseline.
+- **Trial One:** diagnosed connectivity, walls, timestep sensitivity and social parameters.
+- **Trial Two:** validated longer-horizon assembly and checkpoint restoration; held-out noise did not improve assembly.
+- **Trial Three:** neither timestep refinement nor bounded turning achieved temporal stability across speeds 1–5 BL/s.
+
+**Not ready for light yet.** The remaining issue is that one timestep controls both movement and social decision frequency. [NEXT_SOLUTION.md](handlings/NEXT_SOLUTION.md) proposes separate behavioural and physics timesteps; this proposal has not been implemented. The 16 trial notebooks retain their saved outputs, data and figures. Trial Two checkpoints belong to the previous protocol and are not final light checkpoints.
+
+The shared model and check helpers include the already tested optional controls used in those completed trials; the original checks retain their default configuration. No new scientific runs were performed during this reorganization.

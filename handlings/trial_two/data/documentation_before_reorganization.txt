@@ -1,0 +1,34 @@
+# Second handling — assembly, numerical resolution and paired states
+
+## Scope
+
+This stage builds on the preserved [first-stage evidence](../README.md). It tests longer assembly horizons, finer internal updates, operational assembly definitions, reproducible checkpoints and held-out noise. It retains random initialization, the existing 2D social model and observer-only diagnostics. No light is implemented.
+
+Run notebooks 01–06 in order with **Restart Kernel → Run All**, using the existing `mesa-env` environment. Notebook 06 reads saved evidence from 01–05. CSVs, JSONs and checkpoint states are in `data/`; plots are in `figures/`. Heavy noise simulations have a transparent cache verified against configuration, source hashes and output hashes; analyses are recomputed when run in a fresh kernel.
+
+| Notebook | Runs / purpose |
+|---|---|
+| [01 Long horizon](01_long_horizon_assembly.ipynb) | 30 seeds, 180 s, onset/confirmation/censoring and post-assembly stability. |
+| [02 Refinement](02_timestep_refinement.ipynb) | 45 matched cases at three speeds and three dt values, equal 31.25-s time; four recording-validation model runs. |
+| [03 Definition](03_assembly_definition.ipynb) | Reanalyse A/B/C definitions without rerunning the cohort. |
+| [04 Checkpoints](04_assembled_checkpoints.ipynb) | 30 exact restores, 30 source continuations and 60 paired-control branches. |
+| [05 Candidates](05_candidate_solutions.ipynb) | Three complementary approaches and 40 held-out reference/noise runs. |
+| [06 Decision](06_light_readiness_decision.ipynb) | Evidence-based verdict and explicit next step. |
+
+## Results
+
+- Main reference cohort: **30/30 assembled**, **0 censored**, **0 post-confirmation breakups** by 180 s. Three start connected; all 27 initially disconnected populations assemble. Onset median **28.5 s**, IQR **13.1875–55.125 s**, range **0–86.75 s**. Confirmation is 5 s later.
+- Seeds 0 and 2 assemble at **86.75 s** and **73.875 s**. The old horizon had censored these successes.
+- Adopt diagnostic **B: one component continuously for 5 s**, monitored at every internal step. Largest-group fraction 0.95 can still allow one excluded fish.
+- Internal dt **0.03125 does not pass** comparison with **0.015625** under the predeclared practical criteria; all three speeds have unresolved metric sensitivity. This is not formal ODE convergence because decision frequency also changes.
+- Recording every four internal updates is exactly observer-only: all internal states and retained records match, including the noisy test. At internal dt=.03125, output interval=.125 s. Event monitoring still uses every update.
+- **30 checkpoints** restore state and RNGs exactly, reproduce 16 original continuation steps, and yield identical paired 64-step controls. Their stored protocol is dt=.125, speed1; validation is not transferable automatically to a different timestep.
+- Held-out seeds: deterministic **20/20**, noise **19/20** assembly; noise includes one censored seed and one later breakup. There is no replicated advantage justifying noise adoption.
+
+There are **115 full scientific runs**: 30 long-horizon, 45 refinement and 40 held-out comparisons. Four short recording-validation runs and 90 checkpoint continuation branches are reported separately. Definition and selection notebooks reuse evidence instead of inflating simulation counts.
+
+## Recommendation
+
+**NOT READY FOR LIGHT.** Keep the deterministic baseline as the reference control. Longer assembly time and assembled-state pairing are supported, but temporal resolution across the future speed range remains the blocker. Further refine the numerical/social-update convention, validate the accepted protocol, then regenerate checkpoint states before paired light experiments.
+
+These conclusions are finite-sample, model-specific results. The [parent README](../README.md) distinguishes literature support, implementation choices, diagnostic conventions and executed findings, and lists the limitations and references.

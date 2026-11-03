@@ -1,0 +1,123 @@
+{
+  "purpose": "Path/import-only relocation, without new execution or scientific changes.",
+  "original_run_manifests_unchanged": true,
+  "sources": [
+    {
+      "executed_path": "shiner_model.py",
+      "executed_sha256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+      "relocated_path": "shiner_model.py",
+      "relocated_sha256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b",
+      "change": "Location only; contents unchanged"
+    },
+    {
+      "executed_path": "school_assembly_and_stability/diagnostics.py",
+      "executed_sha256": "4a1842f2edcd10c73a33fa9c6b661eb215ed141b80691d1fd0331a85c65ce4ac",
+      "relocated_path": "handlings/trial_one/diagnostics.py",
+      "relocated_sha256": "cd28cb9191ddead61bd6a34d1cbb362dd90246cfed8906d04692f2efb12bb580",
+      "change": "Import/module-path text only"
+    },
+    {
+      "executed_path": "school_assembly_and_stability/second_handling/study_support.py",
+      "executed_sha256": "b2cc4aeabbf3566f554846716235c8c445fc75c268645ebf4082496e5d0c5c1e",
+      "relocated_path": "handlings/trial_two/study_support.py",
+      "relocated_sha256": "e100871bed393bcf9fa2e5aa1e324e0264f8a7c7d61ad38214a4faf7e4d6e7fa",
+      "change": "Import/module-path text only"
+    },
+    {
+      "executed_path": "school_assembly_and_stability/third_handling_temporal_resolution/temporal_support.py",
+      "executed_sha256": "3cea6042a899b45bedd7f0e4392f4509b20c0c94c13734a7c250dd5e8e6db10a",
+      "relocated_path": "handlings/trial_three/temporal_support.py",
+      "relocated_sha256": "3cea6042a899b45bedd7f0e4392f4509b20c0c94c13734a7c250dd5e8e6db10a",
+      "change": "Location only; contents unchanged"
+    },
+    {
+      "executed_path": "school_assembly_and_stability/third_handling_temporal_resolution/data/predeclared_criteria.json",
+      "executed_sha256": "651b4dcbdf0d32e46783b7d4c1bf6fa7fb44a7d051fdd3f64a68b74a1e9c87bb",
+      "relocated_path": "handlings/trial_three/data/predeclared_criteria.json",
+      "relocated_sha256": "651b4dcbdf0d32e46783b7d4c1bf6fa7fb44a7d051fdd3f64a68b74a1e9c87bb",
+      "change": "Location only; contents unchanged"
+    }
+  ],
+  "notebooks": [
+    {
+      "path": "trial_one/01_connectivity_fragmentation.ipynb",
+      "saved_outputs_sha256": "be84b04cecfbf35f56bab7d7d5e292e485a3b25b47c1da4a342bd0a9229cc580",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_one/02_seed_diagnostics.ipynb",
+      "saved_outputs_sha256": "78402ca2779150d23708dec44e25b68463a33ffa9a738f8279906f8ef15a1e84",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_one/03_wall_effects.ipynb",
+      "saved_outputs_sha256": "7892c58f6b803894fd3584fc43d7a1c089dca061c1770e36a02f7f2e68d18e16",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_one/04_timestep_sensitivity.ipynb",
+      "saved_outputs_sha256": "09b81b71bb9ac1104563a2244de64ef405febc27d9dd3197238f406a08c748bd",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_one/05_social_parameter_extensions.ipynb",
+      "saved_outputs_sha256": "db6f79b54f9493847de26bc1dca554844b3440699aa34d0d470643f0cc951e90",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_one/06_baseline_selection.ipynb",
+      "saved_outputs_sha256": "c155870b7b9e51c4f09e639ede9e1677bbbfe19f6c6f664b7fa0713fbfce4410",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/01_long_horizon_assembly.ipynb",
+      "saved_outputs_sha256": "52f386713b7c64c3191a9cd25a4f627dcc2095bf81552ad9fb994ff8fb0da52b",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/02_timestep_refinement.ipynb",
+      "saved_outputs_sha256": "27e124fe7a962731bb0d6cfb1cdac81f05a386554b01488a5a9f13d8b4e22bfc",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/03_assembly_definition.ipynb",
+      "saved_outputs_sha256": "c5fa44985764676e48cfaecc6ffcce67ef8aad62f4e835b6290c91355545e82d",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/04_assembled_checkpoints.ipynb",
+      "saved_outputs_sha256": "1d46c912af3efa9564dcd6fc438f79a20e10d3cdf84616eebfed115306487066",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/05_candidate_solutions.ipynb",
+      "saved_outputs_sha256": "7ff0624ca2c9236a705467319909e01bda2661511702c97e36795f034cb97612",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_two/06_light_readiness_decision.ipynb",
+      "saved_outputs_sha256": "299b276eeb7691e15185ec23417ac6164b9496139fd27f6b6fe15617fdffc1ae",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_three/01_instantaneous_turn_dt_refinement.ipynb",
+      "saved_outputs_sha256": "72a66ba21f7a2d2b01d56f6f1eecbb73cb2487447506e7dd7b6904bc0fd30bed",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_three/02_turn_rate_implementation.ipynb",
+      "saved_outputs_sha256": "6e9769cb9b47f4f7cc0137c04659d214f5c94b99cf12f3b1a2e4cc9c1bde9c04",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_three/03_turn_rate_dt_convergence.ipynb",
+      "saved_outputs_sha256": "c93c8f6334b4111b87fe1c0e18cb66ae0081865b0a9c5251b3e8f7d017c71e7c",
+      "outputs_unchanged": true
+    },
+    {
+      "path": "trial_three/04_final_social_protocol.ipynb",
+      "saved_outputs_sha256": "0c9b65d8a702c19c7b8d40e5a0167738d2a0fdba78942e0e517a574bb17f4a3f",
+      "outputs_unchanged": true
+    }
+  ]
+}

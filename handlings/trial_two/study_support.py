@@ -1,0 +1,243 @@
+"""Streaming observer statistics and state checkpoints for the second study.
+
+Connectivity and assembly are measured every internal update. Saving fewer
+records never changes how often fish make decisions or how assembly is checked.
+"""
+
+import copy
+import hashlib
+import numpy as np
+import pandas as pd
+from mesa.datacollection import DataCollector
+from shiner_model import GoldenShinersModel, compute_group_metrics
+from handlings.trial_one.diagnostics import graph_components
+
+
+DEFINITIONS = {"A": ("connected", 2.5), "B": ("connected", 5.0), "C": ("near", 5.0)}
+
+
+def state_bytes(model):
+    fish = list(model.agents)
+    values = np.array([np.r_[f.position, f.direction, f.speed] for f in fish], dtype="<f8")
+    return values.tobytes() + int(model.steps).to_bytes(8, "little")
+
+
+def checkpoint_payload(model):
+    """Capture social state, absolute time, parameters and both RNG states."""
+    fish = list(model.agents)
+    return {
+        "schema_version": 1, "seed": model.initial_seed,
+        "step": int(model.steps), "time": float(model.steps * model.dt),
+        "positions": [f.position.tolist() for f in fish],
+        "headings": [f.direction.tolist() for f in fish],
+        "speeds": [float(f.speed) for f in fish],
+        "agent_ids": [int(f.unique_id) for f in fish],
+        "model_parameters": {
+            "width": float(model.bounds[0, 1]), "height": float(model.bounds[1, 1]),
+            "speed": float(fish[0].speed), "n_fish": len(fish),
+            "seed": model.initial_seed, "dt": model.dt,
+            "repulsion_radius": model.repulsion_radius,
+            "orientation_radius": model.orientation_radius,
+            "attraction_radius": model.attraction_radius,
+            "enabled_rules": sorted(model.enabled_rules),
+            "fov_degrees": model.fov_degrees, "max_turn_rate": model.max_turn_rate,
+            "angular_noise": model.angular_noise, "record_every": model.record_every,
+        },
+        "numpy_rng_state": copy.deepcopy(model.rng.bit_generator.state),
+        "python_rng_state": model.random.getstate(),
+        "state_sha256": hashlib.sha256(state_bytes(model)).hexdigest(),
+    }
+
+
+def _tuples(value):
+    return tuple(_tuples(item) for item in value) if isinstance(value, list) else value
+
+
+def load_checkpoint(payload):
+    """Restore the recorded state, not the previous observation history."""
+    if payload["schema_version"] != 1:
+        raise ValueError("Unsupported checkpoint schema.")
+    model = GoldenShinersModel(**payload["model_parameters"])
+    for fish, position, heading, speed in zip(
+        model.agents, payload["positions"], payload["headings"], payload["speeds"]
+    ):
+        fish.position = np.array(position, dtype=float)
+        fish.direction = np.array(heading, dtype=float)
+        fish.speed = float(speed)
+        fish.next_position = fish.position.copy()
+        fish.next_direction = fish.direction.copy()
+    assert [f.unique_id for f in model.agents] == payload["agent_ids"]
+    model.steps = int(payload["step"])
+    model.rng.bit_generator.state = copy.deepcopy(payload["numpy_rng_state"])
+    model.random.setstate(_tuples(payload["python_rng_state"]))
+    model.datacollector = DataCollector(
+        model_reporters=model.datacollector.model_reporters,
+        agent_reporters=model.datacollector.agent_reporters,
+    )
+    model.recorded_steps = []
+    model.record_state()
+    assert hashlib.sha256(state_bytes(model)).hexdigest() == payload["state_sha256"]
+    return model
+
+
+def continuation_digest(model, steps=16):
+    """Advance a loaded model and hash each state for comparison with its source."""
+    digest = hashlib.sha256()
+    for _ in range(steps):
+        model.step()
+        digest.update(state_bytes(model))
+    return digest.hexdigest()
+
+
+def _geometry(positions, radius):
+    sizes = [len(group) for group in graph_components(positions, radius)]
+    return {"NumberOfGroups": len(sizes), "LargestGroupFraction": sizes[0] / len(positions),
+            "LargestGroupSize": sizes[0], "FinalComponentSizes": "+".join(map(str, sizes))}
+
+
+def _passes(previous, positions, headings, speeds, dt, radius):
+    """Same straight-path, non-reflected pair convention as first-stage diagnostics."""
+    n = len(positions)
+    triangle = np.triu(np.ones((n, n), dtype=bool), 1)
+    displacement = positions - previous
+    straight = np.max(np.abs(displacement - headings * speeds[:, None] * dt), axis=1) < 1e-10
+    initial = previous[:, None] - previous[None, :]
+    final = positions[:, None] - positions[None, :]
+    change = displacement[:, None] - displacement[None, :]
+    denominator = np.sum(change * change, axis=2)
+    tau = np.divide(-np.sum(initial * change, axis=2), denominator,
+                    out=np.zeros_like(denominator), where=denominator > 0).clip(0, 1)
+    separation = np.linalg.norm(initial + tau[:, :, None] * change, axis=2)
+    eligible = triangle & straight[:, None] & straight[None, :]
+    outside = (np.linalg.norm(initial, axis=2) >= radius) & (np.linalg.norm(final, axis=2) >= radius)
+    missed = eligible & outside & (separation < radius - 1e-12)
+    distances = np.linalg.norm(final, axis=2)
+    return (int(missed.sum()), int(eligible.sum()),
+            float(separation[missed].min()) if missed.any() else np.nan,
+            int(((distances == 0) & triangle).sum()),
+            float(distances[triangle].min()) if n > 1 else np.nan)
+
+
+def run_streamed(seed, duration=180.0, speed=1.0, dt=0.125, record_interval=1.0, **kwargs):
+    """Run a random-start case with efficient traces and exact assembly monitoring.
+
+    AssemblyTime is the onset of the first episode that later satisfies the
+    persistence definition. AssemblyConfirmedTime is when the criterion is
+    actually verified. A censored run has neither within the finite horizon.
+    All summaries use definition B (one group for 5 s) unless prefixed A_/C_.
+    """
+    steps = round(duration / dt)
+    stride = round(record_interval / dt)
+    if stride < 1 or not np.isclose(stride * dt, record_interval, atol=1e-12, rtol=0):
+        raise ValueError("record_interval must be an integer multiple of dt.")
+    if steps < 1 or not np.isclose(steps * dt, duration, atol=1e-10, rtol=0) or steps % stride:
+        raise ValueError("duration must be an integer multiple of dt and record_interval.")
+    if "record_every" in kwargs:
+        raise ValueError("Use record_interval; internal record_every is derived from dt.")
+    model = GoldenShinersModel(seed=int(seed), speed=speed, dt=dt, record_every=stride, **kwargs)
+    fish = list(model.agents)
+    positions = np.array([f.position for f in fish])
+    geometry = _geometry(positions, model.attraction_radius)
+    trackers = {}
+    for name, (condition, hold) in DEFINITIONS.items():
+        eligible = geometry["NumberOfGroups"] == 1 if condition == "connected" else geometry["LargestGroupFraction"] >= 0.95
+        trackers[name] = {"start": 0.0 if eligible else None, "onset": None,
+                          "confirmed": None, "breakups": 0, "was_eligible": eligible, "hold": hold}
+    first_connection = 0.0 if geometry["NumberOfGroups"] == 1 else np.nan
+    trace = [{"Time": 0.0, "Step": 0, **model.metrics, **geometry}]
+    connected_steps = 0
+    sum_lgf = 0.0
+    passes = 0
+    eligible_pairs = 0
+    overlaps = 0
+    overlap_steps = 0
+    min_separation = np.inf
+    min_missed_separation = np.inf
+    checkpoint = None
+    reference_hash = hashlib.sha256()
+    reference_steps = 0
+
+    for step in range(1, steps + 1):
+        previous = positions
+        model.step()
+        time = step * dt
+        positions = np.array([f.position for f in fish])
+        headings = np.array([f.direction for f in fish])
+        speeds = np.array([f.speed for f in fish])
+        geometry = _geometry(positions, model.attraction_radius)
+        connected = geometry["NumberOfGroups"] == 1
+        connected_steps += int(connected)
+        sum_lgf += geometry["LargestGroupFraction"]
+        if connected and np.isnan(first_connection):
+            first_connection = time
+        missed, candidates, minimum, exact, sampled_minimum = _passes(
+            previous, positions, headings, speeds, dt, model.repulsion_radius
+        )
+        passes += missed
+        eligible_pairs += candidates
+        overlaps += exact
+        overlap_steps += int(exact > 0)
+        if np.isfinite(minimum):
+            min_missed_separation = min(min_missed_separation, minimum)
+        if np.isfinite(sampled_minimum):
+            min_separation = min(min_separation, sampled_minimum)
+
+        for name, (condition, _) in DEFINITIONS.items():
+            tracker = trackers[name]
+            eligible = connected if condition == "connected" else geometry["LargestGroupFraction"] >= 0.95
+            if eligible and tracker["start"] is None:
+                tracker["start"] = time
+            if not eligible:
+                if tracker["confirmed"] is not None and tracker["was_eligible"]:
+                    tracker["breakups"] += 1
+                tracker["start"] = None
+            elif tracker["confirmed"] is None and time - tracker["start"] >= tracker["hold"] - 1e-10:
+                tracker["onset"] = tracker["start"]
+                tracker["confirmed"] = time
+                if name == "B":
+                    checkpoint = checkpoint_payload(model)
+            tracker["was_eligible"] = eligible
+
+        if checkpoint is not None and step > checkpoint["step"] and reference_steps < 16:
+            reference_hash.update(state_bytes(model))
+            reference_steps += 1
+        if step % stride == 0:
+            trace.append({"Time": time, "Step": step, **model.metrics, **geometry,
+                          "MissedPassesCumulative": passes, "ExactOverlapsCumulative": overlaps})
+
+    if checkpoint is not None:
+        checkpoint["continuation_validation"] = {"steps": reference_steps, "sha256": reference_hash.hexdigest()}
+        checkpoint["assembly_definition"] = "One connected component for at least 5 simulated seconds"
+        checkpoint["assembly_onset"] = trackers["B"]["onset"]
+    trace = pd.DataFrame(trace)
+    late = trace.loc[trace.Time > max(0, duration - 12.5) + 1e-12]
+    summary = {"Seed": int(seed), "Duration_s": duration, "Speed": speed, "dt": dt,
+               "RecordingInterval": record_interval, "InternalUpdates": steps,
+               "SavedGroupRecords": len(model.recorded_steps),
+               "FirstConnectionTime": first_connection,
+               "ConnectedTimeFraction": connected_steps / steps,
+               "MeanLargestGroupFraction": sum_lgf / steps,
+               "FinalLargestGroupFraction": geometry["LargestGroupFraction"],
+               "FinalComponentSizes": geometry["FinalComponentSizes"],
+               "FinalGroups": geometry["NumberOfGroups"],
+               "LateLargestGroupFraction": float(late.LargestGroupFraction.mean()),
+               "LargestGroupFraction": float(late.LargestGroupFraction.mean()),
+               "Polarization": float(late.Polarization.mean()),
+               "Rotation": float(late.Rotation.mean()),
+               "MeanNND": float(late.MeanNND.mean()),
+               "MeanDistanceToCentroid": float(late.MeanDistanceToCentroid.mean()),
+               "MissedRepulsionPasses": passes, "MissedRepulsionPassesPerSecond": passes / duration,
+               "EligibleStraightPairs": eligible_pairs,
+               "MinimumMissedSeparation": min_missed_separation if np.isfinite(min_missed_separation) else np.nan,
+               "ExactOverlapPairs": overlaps, "OverlapTimeFraction": overlap_steps / steps,
+               "MinimumRecordedPairDistance": min_separation}
+    for name, tracker in trackers.items():
+        fields = {"AssemblySuccess": tracker["confirmed"] is not None,
+                  "AssemblyTime": tracker["onset"] if tracker["onset"] is not None else np.nan,
+                  "AssemblyConfirmedTime": tracker["confirmed"] if tracker["confirmed"] is not None else np.nan,
+                  "Censored": tracker["confirmed"] is None,
+                  "PostAssemblyBreakup": tracker["breakups"] > 0, "BreakupCount": tracker["breakups"]}
+        summary.update({f"{name}_{key}": value for key, value in fields.items()})
+        if name == "B":
+            summary.update(fields)
+    return summary, trace, checkpoint

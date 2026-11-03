@@ -1,0 +1,4 @@
+Seed,InitialGroups,InitialComponentSizes,TotalFragmentedEpisodes,PersistentInitialEpisodes,ReconnectedEpisodes,Duration_s,MeanLargestGroupFraction,ConnectedTimeFraction,LateMeanLargestGroupFraction,LateConnectedFraction,LatePolarization,LateRotation,LateMeanNND,LateMeanDistanceToCentroid,PersistentSplitEvents,PersistentFragmentedTimeFraction,FirstConnectedTime_s,FinalGroups,FinalLargestGroupFraction,FinalComponentSizes,MissedRepulsionPasses,ExactOverlapPairs,TotalReflectedFishSteps
+0,2,18+2,1,1,0,62.5,0.5064,0.0,0.5,0.0,0.45635222672592407,0.4318706621652232,0.583967278204688,9.864649654793325,0,1.0,,2,0.5,10+10,0,0,605
+2,2,19+1,1,1,0,62.5,0.9247999999999998,0.0,0.95,0.0,0.9432519916341158,0.4704399027820284,1.2686908148027316,1.9703792147288437,0,1.0,,2,0.95,19+1,0,0,132
+1,1,20,0,0,0,62.5,1.0,1.0,1.0,1.0,0.9423203458703717,0.05765798656188983,0.5744337370060572,1.13760068193628,0,0.0,0.0,1,1.0,20,0,0,88

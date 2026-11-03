@@ -1,0 +1,74 @@
+{
+  "ScientificRuns": 45,
+  "RecordingValidationModelRuns": 4,
+  "Seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "Speeds": [
+    1.0,
+    3.0,
+    5.0
+  ],
+  "Timesteps": [
+    0.0625,
+    0.03125,
+    0.015625
+  ],
+  "PhysicalDuration_s": 31.25,
+  "LateWindow_s": 12.5,
+  "RecordingInterval_s": 0.125,
+  "CandidateDt_s": 0.03125,
+  "ReferenceDt_s": 0.015625,
+  "Tolerances": {
+    "relative_metric_change": 0.1,
+    "absolute_largest_group_fraction_change": 0.05,
+    "missed_passes_per_second": 0.01
+  },
+  "SpeedReports": [
+    {
+      "Speed": 1.0,
+      "MetricCriteriaPassed": false,
+      "CandidateMissedPassRate": 0.0,
+      "FinestMissedPassRate": 0.0,
+      "CandidateMissedPassCriterionPassed": true,
+      "CandidateAccepted": false,
+      "FailedMetrics": [
+        "MeanNND",
+        "MeanDistanceToCentroid"
+      ]
+    },
+    {
+      "Speed": 3.0,
+      "MetricCriteriaPassed": false,
+      "CandidateMissedPassRate": 0.0128,
+      "FinestMissedPassRate": 0.0128,
+      "CandidateMissedPassCriterionPassed": false,
+      "CandidateAccepted": false,
+      "FailedMetrics": [
+        "Polarization",
+        "LargestGroupFraction",
+        "MeanNND",
+        "MeanDistanceToCentroid"
+      ]
+    },
+    {
+      "Speed": 5.0,
+      "MetricCriteriaPassed": false,
+      "CandidateMissedPassRate": 0.0896,
+      "FinestMissedPassRate": 0.019200000000000002,
+      "CandidateMissedPassCriterionPassed": false,
+      "CandidateAccepted": false,
+      "FailedMetrics": [
+        "MeanDistanceToCentroid"
+      ]
+    }
+  ],
+  "CandidateAcceptedAcrossAllSpeeds": false,
+  "RecordingStrideValidated": true,
+  "ExactOverlapRecordsAcrossAllRuns": 0,
+  "Interpretation": "A practical temporal-resolution screen, not formal ODE convergence or biological calibration."
+}

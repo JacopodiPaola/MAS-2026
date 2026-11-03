@@ -1,0 +1,36 @@
+{
+  "Verdict": "NOT READY FOR LIGHT",
+  "ScientificRuns": 115,
+  "RecordingValidationRuns": 4,
+  "CheckpointContinuationBranches": 90,
+  "ReferenceRuns": 30,
+  "ReferenceAssembled": 30,
+  "ReferenceCensored": 0,
+  "AssemblyOnsetMedian_s": 28.5,
+  "AssemblyOnsetIQR_s": [
+    13.1875,
+    55.125
+  ],
+  "ReferencePostAssemblyBreakupRuns": 0,
+  "Definition": "One geometric component continuously for at least 5 simulated seconds, monitored at every internal update",
+  "ValidatedCheckpoints": 30,
+  "CandidateDt": 0.03125,
+  "ComparisonDt": 0.015625,
+  "CandidateAcceptedAcrossAllSpeeds": false,
+  "ReferenceControl": {
+    "speed": 1.0,
+    "dt": 0.125,
+    "fov_degrees": 360,
+    "max_turn_rate": null,
+    "angular_noise": 0
+  },
+  "NextStep": "Resolve temporal sensitivity and regenerate assembled checkpoints under the accepted internal protocol before adding scalar light-dependent speed.",
+  "LightImplemented": false,
+  "Gates": {
+    "Long-horizon assembly demonstrated in reference cohort": true,
+    "Operational persistent-assembly definition supported": true,
+    "Exact checkpoint restoration and source continuation": true,
+    "Recording cadence independent of internal physics": true,
+    "Candidate timestep accepted across speeds 1\u20135": false
+  }
+}

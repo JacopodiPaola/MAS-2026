@@ -1,0 +1,16 @@
+Speed,CandidateDt,FinerDt,Seeds,MetricsPass,FailedMetrics,CandidateMissedPassRate,FinerMissedPassRate,CrossingRateNonIncreasing,CrossingRatePass,ExactOverlapPass,Pass,Formulation
+1.0,0.03125,0.015625,10,False,"Polarization, ConnectedTimeFraction, MeanNND, MeanDistanceToCentroid",0.0,0.0,True,True,True,False,instantaneous
+1.0,0.015625,0.0078125,10,False,"ConnectedTimeFraction, MeanDistanceToCentroid",0.0,0.0,True,True,True,False,instantaneous
+3.0,0.03125,0.015625,10,False,"MeanNND, MeanDistanceToCentroid",0.0192,0.0096,True,False,True,False,instantaneous
+3.0,0.015625,0.0078125,10,False,"Polarization, Rotation, ConnectedTimeFraction, MeanDistanceToCentroid",0.0096,0.0,True,True,True,False,instantaneous
+5.0,0.03125,0.015625,10,False,ConnectedTimeFraction,0.0928,0.016,True,False,True,False,instantaneous
+5.0,0.015625,0.0078125,10,False,MeanDistanceToCentroid,0.016,0.0,True,False,True,False,instantaneous
+1.0,0.0625,0.03125,10,False,"Polarization, Rotation, LargestGroupFraction, ConnectedTimeFraction, MeanNND, MeanDistanceToCentroid",0.0,0.0,True,True,True,False,bounded 14 rad/s
+1.0,0.03125,0.015625,10,False,"Rotation, MeanDistanceToCentroid",0.0,0.0,True,True,True,False,bounded 14 rad/s
+1.0,0.015625,0.0078125,10,False,MeanDistanceToCentroid,0.0,0.0,True,True,True,False,bounded 14 rad/s
+3.0,0.0625,0.03125,10,False,"ConnectedTimeFraction, MeanDistanceToCentroid",0.048,0.0128,True,False,True,False,bounded 14 rad/s
+3.0,0.03125,0.015625,10,False,MeanDistanceToCentroid,0.0128,0.0,True,False,True,False,bounded 14 rad/s
+3.0,0.015625,0.0078125,10,True,,0.0,0.0,True,True,True,True,bounded 14 rad/s
+5.0,0.0625,0.03125,10,True,,0.304,0.041600000000000005,True,False,True,False,bounded 14 rad/s
+5.0,0.03125,0.015625,10,False,MeanDistanceToCentroid,0.041600000000000005,0.0032,True,False,True,False,bounded 14 rad/s
+5.0,0.015625,0.0078125,10,False,"ConnectedTimeFraction, MeanDistanceToCentroid",0.0032,0.0,True,True,True,False,bounded 14 rad/s

@@ -1,0 +1,71 @@
+{
+  "python": "3.11.16",
+  "mesa": "3.2.0",
+  "numpy": "2.4.6",
+  "pandas": "3.0.5",
+  "model_sha256": "2d89c58f7c659cabf72d518e0eabb4a243f277e3c005156c046aeea8f6eb0462",
+  "diagnostics_sha256": "35de9bfc934df00ab61437543a56f8c73984f3a6d473118cce438f864e2a610c",
+  "notebooks": [
+    {
+      "notebook": "01_connectivity_fragmentation.ipynb",
+      "executed_code_cells": 7,
+      "saved_outputs": true
+    },
+    {
+      "notebook": "02_seed_diagnostics.ipynb",
+      "executed_code_cells": 7,
+      "saved_outputs": true
+    },
+    {
+      "notebook": "03_wall_effects.ipynb",
+      "executed_code_cells": 7,
+      "saved_outputs": true
+    },
+    {
+      "notebook": "04_timestep_sensitivity.ipynb",
+      "executed_code_cells": 8,
+      "saved_outputs": true
+    },
+    {
+      "notebook": "05_social_parameter_extensions.ipynb",
+      "executed_code_cells": 7,
+      "saved_outputs": true
+    },
+    {
+      "notebook": "06_baseline_selection.ipynb",
+      "executed_code_cells": 6,
+      "saved_outputs": true
+    }
+  ],
+  "baseline_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "timestep_runs": 30,
+  "social_extension_runs": 50,
+  "study_has_light": false,
+  "recommendation": {
+    "RecommendedControl": {
+      "speed": 1.0,
+      "dt": 0.125,
+      "fov_degrees": 360,
+      "max_turn_rate": null,
+      "angular_noise": 0.0
+    },
+    "Recommendation": "Retain the unchanged baseline as the comparison control; do not promote a light-ready baseline yet.",
+    "ReadyForLight": false,
+    "Reason": "Unresolved assembly, timestep/decision-frequency sensitivity and incomplete joint high-speed extension validation.",
+    "MeanMissedPassesPerSecondAtSpeed5": {
+      "dt_0.125": 11.4048,
+      "dt_0.03125": 0.0896
+    }
+  }
+}

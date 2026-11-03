@@ -1,0 +1,11 @@
+{
+  "default_trajectories_identical_seeds": [
+    0,
+    1,
+    2
+  ],
+  "steps_per_seed": 500,
+  "diagnostics_preserve_states_and_rng": true,
+  "known_connectivity_graphs": true,
+  "known_missed_repulsion_pass": true
+}

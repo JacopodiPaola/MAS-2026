@@ -1,0 +1,53 @@
+{
+  "DeclaredBeforeExperiments": true,
+  "Seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "Duration_s": 31.25,
+  "RecordingInterval_s": 0.125,
+  "LateWindow_s": 12.5,
+  "PrimaryDecision": "Changes in matched-cohort ensemble means at adjacent dt values; paired-seed absolute changes are reported as sensitivity diagnostics, not trajectory-identity requirements.",
+  "MetricRules": {
+    "Polarization": {
+      "kind": "absolute",
+      "tolerance": 0.05
+    },
+    "Rotation": {
+      "kind": "absolute",
+      "tolerance": 0.05
+    },
+    "LargestGroupFraction": {
+      "kind": "absolute",
+      "tolerance": 0.05
+    },
+    "ConnectedTimeFraction": {
+      "kind": "absolute",
+      "tolerance": 0.05
+    },
+    "MeanNND": {
+      "kind": "relative",
+      "tolerance": 0.1
+    },
+    "MeanDistanceToCentroid": {
+      "kind": "relative",
+      "tolerance": 0.1
+    }
+  },
+  "NearZeroReference": 1e-08,
+  "NearZeroAbsoluteTolerance_BL": 0.01,
+  "MaximumMissedRepulsionPassesPerSecond": 0.01,
+  "CrossingTrend": "Report all adjacent-dt rates. For acceptance, candidate and finer rate must both be <=0.01/model/s; non-monotone changes at rare-event scale remain visible rather than being hidden.",
+  "ExactOverlapCriterion": "Zero sampled exact overlaps in both candidate and finer cohort.",
+  "SelectionRule": "Only select a candidate if its adjacent comparison and every finer available comparison pass at all three speeds. Prefer bounded turning if both formulations qualify, for explicit physical turn capacity, not greater cohesion.",
+  "Limits": "Diagnostic project thresholds, not biological constants, hypothesis tests, formal mathematical convergence, or proof over all speeds and initial conditions.",
+  "ModelSHA256": "81cab7365bc33ed4b6ca06f17be6e3ca5f9b2746c5e26234aca693036259d67b"
+}
