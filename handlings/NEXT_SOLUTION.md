@@ -1,6 +1,4 @@
-# Proposed next solution — Separate behavioural and physics timesteps
-
-**PROPOSED NEXT STEP ONLY. No multi-rate implementation, new experiments or light field are included in this reorganization. Current status: NOT READY FOR LIGHT.**
+# Proposed next solution: Separate behavioural and physics timesteps
 
 ## Executed evidence and interpretation
 
