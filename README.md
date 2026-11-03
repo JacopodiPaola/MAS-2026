@@ -22,16 +22,6 @@ Before adding light and implementing the visualization, we must ensure that the 
 - [`shiner_model.py`](shiner_model.py): the shared model used by every validation notebook.
 - [`checks/README.md`](checks/README.md): the index for checks 02–06, with recording tests, metric validation, multiple seeds and controls, collective-state summaries, diagnostic plots, results and references.
 
-Use Python 3.11 and install the tested validation dependencies:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -r checks/requirements.txt
-```
-
-Open `data_collector.ipynb` in VS Code or Jupyter, select that environment as the kernel, and use **Restart Kernel → Run All**. Then run checks 02–06 in order. Each notebook can also run independently from the repository root or `checks/`. These are constant-speed social-model checks before adding light-dependent speed.
-
 ### Current findings
 
 In `04_schooling_across_seeds.ipynb`, we found that the social model does not always produce one connected school. In seed 0, the group ended as two disconnected groups of 10 + 10 fish, while seed 2 ended as 19 + 1. This also showed that a low mean nearest-neighbour distance is not enough to guarantee whole-group cohesion, because fish can be close to neighbours inside separate subgroups.
