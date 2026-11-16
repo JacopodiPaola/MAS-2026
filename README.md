@@ -20,7 +20,7 @@ Before adding light and implementing the visualization, we must ensure that the 
 
 - [`data_collector.ipynb`](data_collector.ipynb): integration of repulsion, orientation, attraction, synchronous updates and data collection, including the point-1 checks and explanations.
 - [`shiner_model.py`](shiner_model.py): the shared model used by every validation notebook.
-- [`checks/README.md`](checks/README.md): the index for checks 02–06, with recording tests, metric validation, multiple seeds and controls, collective-state summaries, diagnostic plots, results and references.
+- [`checks/README.md`](checks/README.md): the index for checks 02–07, with recording tests, metric validation, multiple seeds and controls, collective-state summaries, diagnostic plots, the decision-rate check, results and references.
 
 ### Handling issues
 
@@ -32,6 +32,6 @@ The complete history is organized in [handlings/README.md](handlings/README.md):
 - **Trial Two:** validated longer-horizon assembly and checkpoint restoration; held-out noise did not improve assembly.
 - **Trial Three:** neither timestep refinement nor bounded turning achieved temporal stability across speeds 1–5 BL/s.
 
-The remaining issue is that one timestep controls both movement and social decision frequency.NEXT_SOLUTION.md proposes separate behavioural and physics timesteps; this proposal has not been implemented. The 16 trial notebooks retain their saved outputs, data and figures. Trial Two checkpoints belong to the previous protocol and are not final light checkpoints.
+**The timestep issue is resolved.** One timestep controls both movement and social decision frequency, and that is intended: `dt = 0.125 s` is the fish's decision interval (8 decisions per second, Puckett et al. 2018, SI Table S1), so it is fixed rather than refined. Moving in sub-steps between decisions gives the same trajectories, so the two-clock proposal in NEXT_SOLUTION.md is not needed. See [handlings/DECISION_RATE.md](handlings/DECISION_RATE.md) and [check 07](checks/07_decision_rate.ipynb). The 16 trial notebooks retain their saved outputs, data and figures. Trial Two checkpoints were made with this same protocol and can be used as starting states for the light experiments.
 
 The shared model and check helpers include the already tested optional controls used in those completed trials; the original checks retain their default configuration. No new scientific runs were performed during this reorganization.

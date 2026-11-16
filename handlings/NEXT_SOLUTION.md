@@ -1,3 +1,5 @@
+> **Superseded.** The two-clock proposal is unnecessary for this model; see [DECISION_RATE.md](DECISION_RATE.md).
+
 # Proposed next solution: Separate behavioural and physics timesteps
 
 ## Executed evidence and interpretation

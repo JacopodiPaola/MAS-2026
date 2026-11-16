@@ -2,7 +2,7 @@
 
 Use Python 3.11 and install the tested dependencies with `python -m pip install -r checks/requirements.txt` from the repository root. Select that environment as the notebook kernel, then use **Restart Kernel → Run All**. Each notebook works independently and contains executed outputs, assertions, the reason for its checks, and an interpretation of the observed results. They all import the same [model implementation](../shiner_model.py); no model classes are copied between notebooks.
 
-The six-step validation sequence is listed below. Start with the integration notebook at the repository root, then run checks 02–06 in order. PyVista and light-dependent speed remain later steps.
+The six-step validation sequence is listed below, followed by check 07 on the decision rate. Start with the integration notebook at the repository root, then run checks 02–07 in order. PyVista and light-dependent speed remain later steps.
 
 | Plan point | Notebook | What it establishes |
 |---|---|---|
@@ -12,6 +12,7 @@ The six-step validation sequence is listed below. Start with the integration not
 | 4 | [Schooling across seeds](04_schooling_across_seeds.ipynb) | Ten seeds and four paired rule conditions distinguish social effects from walls and the initial configuration. |
 | 5 | [Collective-state summaries](05_collective_state_summary.ipynb) | Exact label definitions, threshold equality, occupancy, sensitivity and independence of behaviour from the label. |
 | 6 | [Diagnostic plots](06_diagnostic_plots.ipynb) | Four metric time series, polarization–rotation trajectories and initial/final positions. The figures are also saved in [figures](figures/). |
+| 7 | [Decision rate](07_decision_rate.ipynb) | Exactly 8 social decisions per fish per simulated second (`dt = 0.125 s`). Movement sub-steps of 1/64 s between decisions give the same trajectories at 1 BL/s; at 3 and 5 BL/s they drift apart no faster than a 1e-12 nudge does (chaos). See [DECISION_RATE.md](../handlings/DECISION_RATE.md). |
 
 ## Changes to the model
 
@@ -61,4 +62,4 @@ Execution environment: Python 3.11.16, Mesa 3.2.0 and NumPy 2.4.6 in `mesa-env`.
 
 ## Follow-up study before light
 
-The [three pre-light trials](../handlings/README.md) preserve the follow-up investigation of assembly, temporal resolution, optional perception/turning/noise settings and checkpoints. The checks in this folder retain their original default configuration. The later 180-s reference cohort assembled in 30/30 runs, but timestep sensitivity remains unresolved across the planned speed range. See the [proposed next solution](../handlings/NEXT_SOLUTION.md); it has not been implemented.
+The [three pre-light trials](../handlings/README.md) preserve the follow-up investigation of assembly, temporal resolution, optional perception/turning/noise settings and checkpoints. The checks in this folder retain their original default configuration. The later 180-s reference cohort assembled in 30/30 runs. The timestep sensitivity found in the trials is resolved by fixing the decision rate at 8 decisions per second (`dt = 0.125 s`): see [check 07](07_decision_rate.ipynb) and [DECISION_RATE.md](../handlings/DECISION_RATE.md), which replaces the two-clock [proposal](../handlings/NEXT_SOLUTION.md).
