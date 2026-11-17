@@ -100,14 +100,55 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 
 ---
 
-## Qué nos llevamos a la fase de luz (rellenar al final)
+## Resumen de los 4 estudios
 
-- Parámetros clave y valores elegidos, con su justificación:
-- Rango de ℓ (velocidad × dt) en el que el cardumen funciona:
-  - La luz va a cambiar la velocidad entre 0.2 y 5 BL/s, es decir, ℓ entre 0.025 y 0.625 BL.
-- Parámetros que no importan, que se dejan en el valor más simple:
+| # | Estudio | Resultado principal |
+|---|---|---|
+| 1 | [Parámetros de los papers](01_parametros_papers/README.md) | El modelo de Puckett funciona con 20 peces a 1 BL/s. De la escalera, solo la arena de 28 BL cambia algo, y solo porque los peces tardan más en encontrarse. Con 64 peces siempre sale *swarm*. No aparece el torus de Couzin, salvo con su giro lento (4° por decisión). |
+| 2 | [Parámetros nuevos](02_parametros_nuevos/README.md) | Importan el inicio y la arena (por el tiempo de juntarse) y la regulación de velocidad de Katz (grupo más compacto). No importan el orden de actualización, los vecinos topológicos ni la forma de sumar orientación y atracción. |
+| 3 | [dt y velocidad](03_dt_y_velocidad/README.md) | El modelo depende **solo de ℓ = velocidad × dt** (comprobado exacto). Sin choques hasta ℓ = 0.125 BL, funciona hasta ℓ ≈ 0.2 BL y desde 0.25 hay choques, por la regla "distancia mínima ≈ 0.5 − 2ℓ". Trial One cae sobre la curva. |
+| 4 | [Mínimo y sensibilidad](04_minimo_y_sensibilidad/README.md) | Hacen falta repulsión y orientación. Son sensibles r_r, r_o y N (los tres a través del **apiñamiento**, N ÷ 0.9 (r_o/r_r)²), ℓ y el campo visual por debajo de 230°. El modelo mínimo funciona en 10/10 seeds nuevas. |
+
+**Cambios respecto del plan:** el estudio 4 usa resultados de los estudios 2 y 3, así que los guardamos (commits) en el orden 1 → 3 → 2 → 4. Todo lo que agregamos fuera del plan está marcado como "extra" en cada estudio. Los extras son: el giro lento de Couzin (estudio 1), los ℓ chicos de Trial Three (estudio 3), la corrida 3 veces más larga y el grupo 8b (estudio 2), y la sensibilidad con el grupo ya junto, el apiñamiento y las filas "sin hueco" (estudio 4).
 
 ---
+
+## Qué nos llevamos a la fase de luz
+
+**Parámetros clave y valores elegidos:**
+
+| Parámetro | Valor | Por qué |
+|---|---|---|
+| dt | 0.125 s (8 decisiones por segundo) | Puckett, tabla S1. Es el tiempo de reacción del pez, no un paso numérico. |
+| r_r, r_o, r_a | 0.5, 3 y 5.5 BL | Puckett, tabla S1. r_r y r_o son muy sensibles (estudio 4). |
+| N | 20 peces | Apiñamiento 0.6, lejos del límite de unos 33 peces. Con 40 o más, el modelo da *swarm* (estudios 1 y 4). |
+| Campo visual, giro y ruido | 270°, 1.75 rad y 0.01 rad **por decisión** (Puckett) | Casi no cambian nada (estudios 1 y 4), así que usamos los valores del paper. El giro y el ruido van **por decisión**, para que solo importe ℓ (estudio 3). |
+| Arena | 28 × 28 BL (Puckett) | No importa si el grupo empieza junto (estudio 4). |
+| Inicio | **grupo ya junto** (checkpoints o inicio compacto) | Con inicio al azar, en 180 BL el 40 % de los grupos todavía no se había juntado (estudios 1, 2 y 4). |
+| Reglas | las tres | La atracción no hace falta para mantener el grupo, pero sí para juntarse y para el mecanismo de la luz (los peces rápidos siguen a los lentos). |
+
+**Rango de ℓ (velocidad × dt) en el que el cardumen funciona:**
+
+- Sin ningún choque: **ℓ ≤ 0.125 BL** (hasta 1 BL/s con dt = 0.125 s).
+- Funciona (choques en menos del 5 % del tiempo): **ℓ ≤ 0.2 BL** (hasta 1.6 BL/s).
+- Desde ℓ = 0.25 BL (2 BL/s) hay choques y el grupo se desordena. La regla es: distancia mínima ≈ 0.5 − 2ℓ.
+- La luz va a cambiar la velocidad entre 0.2 y 5 BL/s, es decir, ℓ entre 0.025 y 0.625 BL. **Solo la parte lenta da un cardumen sin choques.** Hay que decidir qué hacer antes de la luz (opciones en el estudio 3). Nuestra sugerencia: dejar el modelo de Puckett tal cual, medir siempre los choques y repetir con una velocidad máxima de 1.6 BL/s como prueba de robustez.
+
+**Parámetros que no importan y que se dejan en el valor más simple o en el del paper:**
+
+- orden de actualización: todos a la vez (como Couzin);
+- vecinos por distancia, no topológicos;
+- suma directa de orientación y atracción (Puckett, ecuación 7);
+- velocidad igual para todos los peces y sin regulación de velocidad;
+- ruido, giro máximo, campo visual y tamaño de arena: los valores de Puckett.
+
+**Limitaciones que hay que reportar:**
+
+- Con velocidades altas hay choques. Puckett et al. (2018, p. 6) vieron lo mismo y lo atribuyeron a la baja resolución temporal.
+- En el modelo, nadar más rápido da **menos** orden; en los peces reales, más (Tunstrøm et al. 2013).
+- Con el giro de Puckett no hay *milling*, y los peces reales sí lo hacen.
+- El modelo deja a los vecinos a 0.6 BL; en los peces reales están a 1.5–2 BL (Katz et al. 2011).
+- Con más de unos 30 peces, el modelo pasa a *swarm*.
 
 ## Referencias
 
