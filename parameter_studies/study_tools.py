@@ -82,6 +82,26 @@ def rules_from_text(text):
     return tuple(text.split("+"))
 
 
+# Study 2 options and their defaults. Settings without these keys use the defaults,
+# which reproduce shiner_model.py exactly.
+STUDY_2_DEFAULTS = {
+    "initial_spread": 1.0,
+    "update": "synchronous",
+    "neighbour_mode": "metric",
+    "k_neighbours": 7,
+    "social_combination": "raw_sum",
+    "speed_sd": 0.0,
+    "speed_gain": 0.0,
+}
+
+
+def study_2_option(settings, key):
+    """The value of a study 2 option, or its default when the settings do not have it."""
+    if key in settings:
+        return settings[key]
+    return STUDY_2_DEFAULTS[key]
+
+
 def build_model(settings, seed):
     """Create a StudyModel from a settings dictionary."""
     return StudyModel(
@@ -98,6 +118,13 @@ def build_model(settings, seed):
         fov_degrees=settings["fov_degrees"],
         turn_per_decision=settings["turn_per_decision"],
         noise_per_decision=settings["noise_per_decision"],
+        initial_spread=study_2_option(settings, "initial_spread"),
+        update=study_2_option(settings, "update"),
+        neighbour_mode=study_2_option(settings, "neighbour_mode"),
+        k_neighbours=study_2_option(settings, "k_neighbours"),
+        social_combination=study_2_option(settings, "social_combination"),
+        speed_sd=study_2_option(settings, "speed_sd"),
+        speed_gain=study_2_option(settings, "speed_gain"),
     )
 
 

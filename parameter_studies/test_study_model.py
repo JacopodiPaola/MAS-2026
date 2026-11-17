@@ -19,7 +19,7 @@ from study_tools import (
     A0_SETTINGS, PUCKETT_SETTINGS, build_model, change_settings, fish_headings,
     fish_positions, number_of_decisions, record_trajectory, run_simulation,
 )
-from shiner_model import GoldenShinersModel
+from shiner_model import GoldenShiners, GoldenShinersModel
 
 
 def test_default_matches_shared_model():
@@ -95,9 +95,136 @@ def test_same_step_length_same_trajectories():
           "(A0 and A4, seeds 0-2, 400 decisions).")
 
 
+# ---------------------------------------------------------------------------
+# Tests for the study 2 options
+# ---------------------------------------------------------------------------
+
+def place_fish(model, positions, headings):
+    """Put the fish of a small test model at chosen positions with chosen headings."""
+    fish_by_id = sorted(model.agents, key=lambda fish: fish.unique_id)
+    for index in range(len(fish_by_id)):
+        fish_by_id[index].position = np.array(positions[index], dtype=float)
+        fish_by_id[index].direction = np.array(headings[index], dtype=float)
+    return fish_by_id
+
+
+def test_initial_spread():
+    """5. With initial_spread = 0.25, every fish starts in the central square (side 7 BL of 28)."""
+    model = StudyModel(width=28, height=28, seed=0, initial_spread=0.25)
+    positions = fish_positions(model)
+    assert positions.min() >= 10.5 and positions.max() <= 17.5
+    # The headings are the same random numbers as with the default start.
+    default = StudyModel(width=28, height=28, seed=0)
+    assert np.array_equal(fish_headings(model), fish_headings(default))
+    print("Test 5 passed: initial_spread = 0.25 starts every fish inside [10.5, 17.5] x [10.5, 17.5].")
+
+
+def test_asynchronous_update():
+    """6. Asynchronous update is reproducible, differs from synchronous, and still moves one step length."""
+    first = StudyModel(seed=0, update="asynchronous")
+    second = StudyModel(seed=0, update="asynchronous")
+    synchronous = StudyModel(seed=0)
+    for _ in range(100):
+        first.step()
+        second.step()
+        synchronous.step()
+    assert np.array_equal(fish_positions(first), fish_positions(second))
+    assert not np.array_equal(fish_positions(first), fish_positions(synchronous))
+
+    # In one asynchronous step every fish still moves exactly speed x dt (away from walls).
+    model = StudyModel(seed=1, update="asynchronous")
+    before = fish_positions(model)
+    model.step()
+    after = fish_positions(model)
+    for fish in range(len(after)):
+        distance_to_wall = min(after[fish].min(), 20 - after[fish].max())
+        if distance_to_wall > 0.125:
+            assert abs(np.linalg.norm(after[fish] - before[fish]) - 0.125) < 1e-12
+    print("Test 6 passed: asynchronous update is reproducible and differs from synchronous.")
+
+
+def test_topological_neighbours():
+    """7. Topological mode keeps exactly the k nearest of the fish inside the zones."""
+    model = StudyModel(seed=0, n_fish=30, neighbour_mode="topological", k_neighbours=4)
+    for fish in model.agents:
+        all_neighbours = GoldenShiners.get_neighbors(fish)   # the metric list of the shared model
+        kept = fish.get_neighbors()
+        assert len(kept) == min(4, len(all_neighbours))
+        all_distances = sorted(neighbour[2] for neighbour in all_neighbours)
+        kept_distances = sorted(neighbour[2] for neighbour in kept)
+        assert kept_distances == all_distances[:len(kept)]
+    print("Test 7 passed: topological mode keeps the 4 nearest neighbours.")
+
+
+def test_normalized_combination():
+    """8. Normalized: one aligned neighbour counts as much as two attracting neighbours."""
+    # Fish 0 swims east. Fish 1 (orientation zone, 1 BL away) swims north.
+    # Fish 2 and 3 are 4 BL east (attraction zone).
+    positions = [(10, 10), (10, 11), (14, 10), (14, 10)]
+    headings = [(1, 0), (0, 1), (1, 0), (1, 0)]
+
+    raw_model = StudyModel(seed=0, n_fish=4)
+    fish = place_fish(raw_model, positions, headings)[0]
+    raw = fish.social_direction(fish.get_neighbors())
+    assert np.allclose(raw, np.array([2, 1]) / np.sqrt(5))      # (0, 1) + 2 x (1, 0)
+
+    normalized_model = StudyModel(seed=0, n_fish=4, social_combination="normalized")
+    fish = place_fish(normalized_model, positions, headings)[0]
+    normalized = fish.social_direction(fish.get_neighbors())
+    assert np.allclose(normalized, np.array([1, 1]) / np.sqrt(2))   # (0, 1) + (1, 0)
+    print("Test 8 passed: raw sum -> (2, 1)/sqrt(5); normalized -> (1, 1)/sqrt(2).")
+
+
+def test_speed_differences():
+    """9. speed_sd gives each fish its own speed and does not change positions or headings."""
+    model = StudyModel(seed=0, n_fish=400, speed_sd=0.3)
+    same_fish = StudyModel(seed=0, n_fish=400)
+    assert np.array_equal(fish_positions(model), fish_positions(same_fish))
+    assert np.array_equal(fish_headings(model), fish_headings(same_fish))
+    speeds = []
+    for fish in model.agents:
+        speeds.append(fish.speed)
+    assert abs(np.mean(speeds) - 1.0) < 0.05
+    assert abs(np.std(speeds) - 0.3) < 0.04
+    print(f"Test 9 passed: 400 fish, mean speed {np.mean(speeds):.3f}, standard deviation {np.std(speeds):.3f}.")
+
+
+def test_speed_regulation():
+    """10. Speed regulation: close ahead -> slower, close behind -> faster, far ahead -> faster, far behind -> slower."""
+    cases = [
+        (0.3, 1 - 0.3 * 0.3),    # close ahead: signal -0.3
+        (-0.3, 1 + 0.3 * 0.3),   # close behind: signal +0.3
+        (1.0, 1 + 0.3 * 1.0),    # far ahead: signal +1
+        (-1.0, 1 - 0.3 * 1.0),   # far behind: signal -1
+        (2.0, 1.5),              # far ahead, clipped at 1.5 x the normal speed
+        (-2.0, 0.5),             # far behind, clipped at 0.5 x the normal speed
+    ]
+    for ahead, expected_speed in cases:
+        model = StudyModel(seed=0, n_fish=2, speed_gain=0.3)
+        fish = place_fish(model, [(10, 10), (10 + ahead, 10)], [(1, 0), (1, 0)])[0]
+        speed = fish.regulated_speed(fish.get_neighbors())
+        assert abs(speed - expected_speed) < 1e-12, (ahead, speed, expected_speed)
+
+    # In a real run the speeds really change and stay between 0.5 and 1.5.
+    model = StudyModel(seed=0, speed_gain=0.3)
+    for _ in range(50):
+        model.step()
+    speeds = []
+    for fish in model.agents:
+        speeds.append(fish.speed)
+    assert min(speeds) >= 0.5 and max(speeds) <= 1.5 and min(speeds) < max(speeds)
+    print("Test 10 passed: the speed rule follows the README, limited to 0.5-1.5 x the normal speed.")
+
+
 if __name__ == "__main__":
     test_default_matches_shared_model()
     test_turn_limit_per_decision()
     test_number_of_decisions()
     test_same_step_length_same_trajectories()
+    test_initial_spread()
+    test_asynchronous_update()
+    test_topological_neighbours()
+    test_normalized_combination()
+    test_speed_differences()
+    test_speed_regulation()
     print("All tests passed.")
