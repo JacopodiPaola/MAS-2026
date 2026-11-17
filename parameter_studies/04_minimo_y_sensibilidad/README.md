@@ -64,7 +64,7 @@ Resultado: una tabla final de **"parámetros clave para la fase de luz"**.
 
 ## Resultados
 
-Cuaderno: [`study_04.ipynb`](study_04.ipynb). Datos: `data/results.csv` (840 simulaciones), `data/sensitivity_classes.csv` y `data/sensitivity_classes_compact.csv`.
+Cuaderno: [`study_04.ipynb`](study_04.ipynb). Datos: `data/results.csv` (880 simulaciones), `data/sensitivity_classes.csv` y `data/sensitivity_classes_compact.csv`.
 
 ### Parte A — Quitar reglas
 
