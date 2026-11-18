@@ -1,0 +1,11 @@
+seed,pulse_speed,pulse_seconds,ready_at_pulse_start,recovery_time_s,recovered_within_10_s,recovered_within_60_s,pulse_collision_fraction,pulse_min_pair_distance,pulse_min_largest_fraction,pulse_mean_polarization,end_largest_fraction,end_polarization,end_collision_fraction,n_decisions,runtime_s
+0,1.0,0,False,1.375,True,True,,,,,1.0,0.9974655862007296,0.0,960,0.7986641249153763
+1,1.0,0,False,0.0,True,True,,,,,1.0,0.9976495679896734,0.0,960,0.7972464999184012
+2,1.0,0,True,0.0,True,True,,,,,1.0,0.9977386514566253,0.0,960,0.7960148341953754
+3,1.0,0,True,2.375,True,True,,,,,1.0,0.9999190263213373,0.0,960,0.7952329581603408
+4,1.0,0,True,0.0,True,True,,,,,1.0,0.9980640459568548,0.0,960,0.7988112499006093
+5,1.0,0,True,0.0,True,True,,,,,0.95,0.9179758513662175,0.0,960,0.7841937500052154
+6,1.0,0,True,0.0,True,True,,,,,1.0,0.9999472902832235,0.0,960,0.7972047082148492
+7,1.0,0,True,0.0,True,True,,,,,1.0,0.9999338098081492,0.0,960,0.7936113751493394
+8,1.0,0,True,0.0,True,True,,,,,1.0,0.9999473710899117,0.0,960,0.8252398329786956
+9,1.0,0,True,4.375,True,True,,,,,1.0,0.9999352828762882,0.0,960,0.8040487500838935
