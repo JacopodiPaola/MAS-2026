@@ -1,64 +1,94 @@
-# Social-model checks before adding light
+# Checks and trials before adding light
 
-Use Python 3.11 and install the tested dependencies with `python -m pip install -r checks/requirements.txt` from the repository root. Select that environment as the notebook kernel, then use **Restart Kernel → Run All**. Each notebook works independently and contains executed outputs, assertions, the reason for its checks, and an interpretation of the observed results. They all import the same [model implementation](../shiner_model.py); no model classes are copied between notebooks.
+## How to use this folder
 
-The six-step validation sequence is listed below. Start with the integration notebook at the repository root, then run checks 02–06 in order. PyVista and light-dependent speed remain later steps.
+- **Environment:** Python 3.11. From the repository root run `python -m pip install -r checks/requirements.txt`, choose that environment as the notebook kernel, and use *Restart Kernel → Run All*.
+- **Folder map:**
+  - [`../shiner_model.py`](../shiner_model.py): the fish model. Every notebook imports this one file.
+  - [`model_checks/`](model_checks/): checks 01 to 07 of the model. Run them in order; each takes seconds to minutes.
+  - [`trial_one/`](trial_one/), [`trial_two/`](trial_two/), [`trial_three/`](trial_three/): the first three trials, kept as an archive with their saved outputs, data and figures.
+  - [`check_support.py`](check_support.py): small helpers shared by the checks and the trials.
+  - [`../Golden_Shiner_MAS_Complete.ipynb`](../Golden_Shiner_MAS_Complete.ipynb): the complete notebook, which runs the same model.
+  - [`../past_repo/`](../past_repo/): earlier prototypes of the project (not used here).
+- **Caching:** the trials save every result in their `data/` folder. When a trial notebook runs again, it first compares fingerprints (hashes) of its code and saved results; if they match, it loads the saved results instead of simulating. Trials one to three are slow, so do not re-run them. Their support modules (`diagnostics.py`, `relocation.py`, `study_support.py`, `temporal_support.py`) must not be edited, because the caches check their hashes.
 
-| Plan point | Notebook | What it establishes |
-|---|---|---|
-| 1 | [DataCollector integration](../data_collector.ipynb) | Twenty-one controlled checks cover the three rules, rule priority, overlaps, synchronous planning, recording after movement, and reflecting walls. The final Markdown explains the checks. |
-| 2 | [Recording integrity](02_recording_integrity.ipynb) | Genuine step 0, all 100 updates, 101 group records, 2020 fish records, matching snapshots, unchanged history, and observation-independent movement. |
-| 3 | [Metric validation](03_metric_validation.ipynb) | Sixty-two known-answer comparisons cover alignment, clockwise/counterclockwise rotation, compactness, nearest neighbours, geometric invariances and degenerate cases. |
-| 4 | [Schooling across seeds](04_schooling_across_seeds.ipynb) | Ten seeds and four paired rule conditions distinguish social effects from walls and the initial configuration. |
-| 5 | [Collective-state summaries](05_collective_state_summary.ipynb) | Exact label definitions, threshold equality, occupancy, sensitivity and independence of behaviour from the label. |
-| 6 | [Diagnostic plots](06_diagnostic_plots.ipynb) | Four metric time series, polarization–rotation trajectories and initial/final positions. The figures are also saved in [figures](figures/). |
+## The project in one paragraph
 
-## Changes to the model
+Golden shiners are small fish that swim in schools and prefer dark water. A school can find dark areas even though each fish only senses the light where it is: fish swim faster in bright light and slower in the dark, and because they stay together, the whole group drifts towards the dark (Berdahl et al. 2013; Puckett et al. 2018). We model each fish as an agent that follows three local rules (Couzin et al. 2002). The goal is to add this light-dependent speed. Before adding light, we had to be sure that the social model works on its own. This folder documents that work.
 
-The code is a deterministic, constant-speed baseline. `decide()` calculates a future state from current neighbours; `advance()` commits that state. Both methods are short. Maintaining the two phases avoids order-dependent movement without requiring a separate copy of the whole world.
+## Key ideas in plain words
 
-Exactly coincident fish no longer get silently skipped. Pairwise escape headings reverse sign when the fish are exchanged. Identical headings use opposite perpendiculars, with agent IDs resolving the tie. This numerical convention uses no random draw or position teleportation. A cancelling repulsion sum also retains priority, with the nearest neighbour supplying a deterministic escape heading.
+- **Agent-based model:** a simulation in which every fish is a small program (an *agent*) with simple rules. Group behaviour is not programmed; it emerges from the rules.
+- **The three zones:** each fish looks at the fish around it in three rings. In the *repulsion* zone (too close) it swims away. In the *orientation* zone it copies their direction. In the *attraction* zone (farther away) it swims towards them. Repulsion has priority: if any fish is too close, the fish only avoids it (Couzin et al. 2002).
+- **Body length (BL):** our unit of distance, the length of one fish, about 5 cm (Puckett et al. 2018, Table S1). Our zones end at 0.5, 3 and 5.5 BL.
+- **Decision and dt:** every dt seconds, each fish looks around and picks a new direction. dt is the fish's reaction time. We use dt = 0.125 s, that is 8 decisions per second.
+- **Step length:** how far a fish swims between two decisions, speed × dt. At 1 BL/s it is 0.125 BL.
+- **Polarization:** a number from 0 to 1 that says how much the fish point the same way (1 = all the same direction).
+- **Rotation (milling):** a number from 0 to 1 that says how much the fish swim in a circle around the group centre (1 = a perfect circle, called *milling*).
+- **Together:** the fish form one connected group. Two fish are linked if they are at most 5.5 BL apart (the attraction radius); the group is together if every fish can be reached through links.
+- **Collision:** two fish that come much closer than the repulsion zone allows. The model treats fish as points, so nothing physically stops two fish from overlapping.
+- **Crowding:** when too many fish must share a small group, some always sit inside another fish's repulsion zone, keep escaping, and the group cannot line up.
 
-Orientation and attraction now combine their **raw** vector sums before normalization. The earlier implementation normalized each zone separately. A cancelling combined social vector retains the current heading. These two changes align the regular social-vector calculation with Couzin and the Puckett supplement, and can change earlier trajectories. The overlap/tie conventions are implementation decisions rather than fitted fish behaviour.
+## Chapter 1: Building and checking the model
 
-The model validates its inputs, handles multiple wall crossings, and shares one implementation across all checks. [check_support.py](check_support.py) contains only experiment fixtures and audit helpers. DataCollector remains an observer.
+**What we asked.** Does the model do exactly what the rules say, and do the fish behave like a school?
 
-## Findings from the executed experiments
+**What we did.** We wrote one model file, [`shiner_model.py`](../shiner_model.py), that every notebook imports. It follows Couzin et al. (2002) and the supplement of Puckett et al. (2018): repulsion has priority, orientation and attraction are added as raw sums (Puckett et al. 2018, SI eq. 7), and all fish decide from the same old state before any fish moves. Then we checked it in seven notebooks:
 
-All execution, recording and known-answer checks passed. The multi-seed experiment ran 40 simulations: ten paired seeds, 500 updates each, with all rules, no orientation, no attraction, and no social rules. Comparisons use the last 100 records, steps 401–500.
+| Check | What it tests |
+|---|---|
+| [01 Data collector](model_checks/01_data_collector.ipynb) | 21 small hand-made cases: the three rules, repulsion priority, fish on top of each other, walls and recording |
+| [02 Recording](model_checks/02_recording_integrity.ipynb) | Every step is recorded once, and recording does not change the fish |
+| [03 Metrics](model_checks/03_metric_validation.ipynb) | 62 cases with a known answer for polarization, rotation, spread and nearest neighbours |
+| [04 Seeds](model_checks/04_schooling_across_seeds.ipynb) | 10 random starts with all rules, without orientation, without attraction and without any social rule (62.5 s each) |
+| [05 Labels](model_checks/05_collective_state_summary.ipynb) | Names for the group state (polarized, milling, swarm) with the 0.35 / 0.65 thresholds of Tunstrøm et al. (2013) |
+| [06 Plots](model_checks/06_diagnostic_plots.ipynb) | Time series, polarization against rotation, and positions |
+| [07 Decision rate](model_checks/07_decision_rate.ipynb) | Exactly 8 decisions per fish per second, and what sub-steps change (Chapter 3) |
 
-| Late-window metric, mean across ten seeds | All rules | No social rules |
-|---|---:|---:|
-| Polarization | 0.8723 | 0.2165 |
-| Rotation | 0.1461 | 0.1110 |
-| Mean nearest-neighbour distance | 0.6484 | 2.5260 |
-| Mean distance to centroid | 2.2619 | 7.3814 |
+**What we found.** All checks passed. The social rules clearly matter: over the last 100 steps of check 04, the mean polarization was 0.87 with all rules and 0.22 without social rules, and the mean distance to the nearest neighbour was 0.65 BL against 2.53 BL. But not every start ended as one group: after 62.5 s, seed 0 was split into 10 + 10 fish and seed 2 into 19 + 1.
 
-The full model has higher polarization in all ten paired comparisons and a smaller mean group radius in nine. This supports a social contribution to alignment and aggregation in this setup.
+**What we decided, and why.** The rules work. The split seeds needed a closer look before adding light, so we started the trials.
 
-**Reliable whole-group schooling is not established for every seed.** Seed 0 has late-window mean polarization 0.4564 and mean group radius 9.8646, while several other seeds have a radius close to 1.1. At the final timestep, a distance graph with links inside the 5.5-BL social range confirms two disconnected components of 10 + 10 fish for seed 0 and 19 + 1 for seed 2; the other eight seeds have one component of 20. Small nearest-neighbour distance can coexist with large whole-group spread and disconnected subgroups. The results therefore require local spacing, global spread and connectivity, not a single average or an attractive trajectory.
+## Chapter 2: Trials one to three, the problem that would not go away
 
-The labels are descriptive. Their 0.35/0.65 boundaries come from experimental state separation, not universal constants. Reclassifying the same 5010 records with 0.25/0.75 changes 11.84% of labels; using 0.40/0.60 changes 5.33%. Consecutive records are correlated, and these checks use raw per-update order parameters rather than the experimental temporal smoothing. Prepared circular cases validate the rotation formula; they do not prove that the social dynamics generate stable milling.
+**What we asked.** Why did some groups look broken? And why did the results change when we changed dt?
 
-## Decisions before light-dependent speed
+**What we did.** [Trial One](trial_one/) followed seeds 0 and 2 step by step and tested walls, smaller dt and three extra rules from Puckett et al. (2018): 270° vision, a turn limit and a small heading error. [Trial Two](trial_two/) ran 30 random starts for 180 s, defined when a group counts as assembled (one group for 5 s in a row), tested saving and reloading groups (*checkpoints*), and tested the heading error on 20 new seeds. [Trial Three](trial_three/) made dt smaller and smaller, first with instant turns (90 runs) and then with a turn limit of 14 rad/s (120 runs).
 
-1. Investigate the dispersed seed and repeat the multi-seed checks after each justified modelling change. Check social connectivity and arena/density effects before choosing a preferred trajectory or tuning parameters.
-2. Decide how closely to follow the Puckett model: the current baseline has **360° perception, instantaneous turns and no social noise**. Its supplement instead specifies 270° perception, a maximum turn of 1.75 radians **per update** (about 100°), and angular error 0.01 radians. The units differ from the turn-rate convention in the original Couzin paper.
-3. Check numerical resolution at the future maximum speed. At 5 BL/s and `dt=0.125`, a fish travels 0.625 BL per update, exceeding the 0.5-BL repulsion radius. Defined exact-overlap behaviour and correct wall reflection do not prevent fish from crossing between samples. Timestep/substep and crossing tests are needed, including consistent scaling of turn/noise parameters.
-4. Keep explicit orientation matching as a model choice and retain the no-orientation comparison. Katz reports alignment emerging without clear evidence for explicit body-orientation matching in real shiners.
-5. Add scalar local light-dependent speed only after deciding these issues. Keep the gradient direction unavailable to the fish in the shiner collective-sensing baseline, and compare future results against these constant-speed controls.
+**What we found.**
 
-## References and their roles
+| Trial | Main result |
+|---|---|
+| One | The groups were not breaking apart; they had not come together yet. No group split again after it was connected. Walls did not explain it: seeds 0 and 2 were split before touching a wall, also in a 40 × 40 BL arena. The extra rules did not help consistently. But at 5 BL/s the results depended strongly on dt: polarization 0.48, 0.79 and 0.94 for dt = 0.125, 0.0625 and 0.03125 s. |
+| Two | All 30 groups came together within 180 s (median 28.5 s, slowest 86.75 s), and none broke apart afterwards. All 30 checkpoints reloaded exactly. The heading error did not help (20 of 20 new seeds assembled without it, 19 of 20 with it). Results still changed with dt: from dt = 0.03125 to 0.015625 s, the nearest-neighbour distance changed by almost 25 % at 1 BL/s. |
+| Three | Smaller dt never made the results settle. Between the two smallest dt (0.015625 and 0.0078125 s), the group spread still changed by 27–52 % with instant turns. With the turn limit, only 1 of 9 comparisons passed. |
 
-- [Couzin et al. (2002), *Collective memory and spatial sorting in animal groups*](https://doi.org/10.1006/jtbi.2002.3065): local zones, repulsion priority, social-vector combination and synchronous decisions.
-- [Berdahl et al. (2013), *Emergent sensing of complex environments by mobile animal groups*](https://doi.org/10.1126/science.1225883): collective sensing through scalar local environmental responses and social interactions.
-- [Puckett et al. (2018), *Collective gradient sensing in fish schools*](https://doi.org/10.1038/s41598-018-26037-9): shiner-model parameters and the later light-speed mechanism. Its [official supplement](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-018-26037-9/MediaObjects/41598_2018_26037_MOESM1_ESM.pdf), gives the social equations and Table S1 units. The checks use body-length units, with 5 cm per body length in that table.
-- [Katz et al. (2011), *Inferring the structure and dynamics of interactions in schooling fish*](https://doi.org/10.1073/pnas.1107583108): empirical motivation for speed-regulation and no-explicit-alignment comparisons.
-- [Tunstrøm et al. (2013), *Collective States, Multistability and Transitional Behavior in Schooling Fish*](https://doi.org/10.1371/journal.pcbi.1002915): polarization, rotation and exploratory state regions; supplementary Figure S3 considers threshold sensitivity.
-- [Hein et al. (2015), *The evolution of distributed sensing and collective computation in animal populations*](https://doi.org/10.7554/eLife.10955): conceptual support and a different force/acceleration model for future comparison.
+**What we decided, and why.** The broken groups were a waiting problem: give random starts enough time, or start from an assembled group. We did not add rules just to force the fish together. The dt problem was still open, and each trial ended with "not ready for light".
 
-Execution environment: Python 3.11.16, Mesa 3.2.0 and NumPy 2.4.6 in `mesa-env`. The suite validates this implementation and its stated operating conditions; it does not calibrate biological parameters.
+## Chapter 3: The key insight, dt is the reaction time
 
-## Follow-up study before light
+**What we asked.** Is the dt problem a numerical error that smaller steps should remove?
 
-The [three pre-light trials](../handlings/README.md) preserve the follow-up investigation of assembly, temporal resolution, optional perception/turning/noise settings and checkpoints. The checks in this folder retain their original default configuration. The later 180-s reference cohort assembled in 30/30 runs, but timestep sensitivity remains unresolved across the planned speed range. See the [proposed next solution](../handlings/NEXT_SOLUTION.md); it has not been implemented.
+**What we did.** We looked at what dt does in our model and what it means in the papers. [Check 07](model_checks/07_decision_rate.ipynb) also tested *sub-steps*: fish decide every 0.125 s but move in 8 small steps of 1/64 s between decisions. Sub-steps were the idea of two commits in the complete notebook.
+
+**What we found.**
+- In our model, one dt sets two things at once: how far a fish moves in one step and how often it decides. A smaller dt makes a fish that reacts faster. That is a different fish, not a more accurate one, so the results can never "converge".
+- The papers treat the time step as behaviour. Couzin et al. (2002) set it to the fish's reaction time, 0.1 s, and Puckett et al. (2018, Table S1) use 8 decisions per second, that is dt = 0.125 s.
+- Sub-steps change nothing. Between two decisions a fish swims in a straight line, so 8 small steps end where one big step ends. At 1 BL/s the paths stayed the same: after 60 s the largest difference was less than a billionth of a body length. At 3 and 5 BL/s the runs drift apart, but no sooner than the normal model drifts from itself when every fish is moved by a trillionth of a body length: that is chaos, not a different model. Sub-steps were also 2.5 to 2.6 times slower.
+
+**What we decided, and why.**
+- dt = 0.125 s is fixed. It is a value from the literature, not a number to refine.
+- No sub-steps, and the old idea of two separate clocks (one for decisions and one for movement) was dropped: with a fixed decision rate there is nothing left to converge, and sub-steps give the same paths.
+- The complete notebook now uses the shared model too, so the project has one model.
+- Trial Two's checkpoints were made with exactly these settings (dt = 0.125 s, 1 BL/s), so they can be used as starting groups.
+
+## Status and next steps
+
+The social model works, and dt is fixed at 0.125 s. Before adding light we still want to know which parameters matter and how the model behaves at the higher speeds that light will cause (up to 5 BL/s; Puckett et al. 2018). These parameter studies are on the `develop` branch and will be added here as trials four to eight. Light is not implemented on `main`.
+
+## References
+
+- Berdahl, A., Torney, C. J., Ioannou, C. C., Faria, J. J., & Couzin, I. D. (2013). Emergent sensing of complex environments by mobile animal groups. *Science, 339*(6119), 574–576. https://doi.org/10.1126/science.1225883
+- Couzin, I. D., Krause, J., James, R., Ruxton, G. D., & Franks, N. R. (2002). Collective memory and spatial sorting in animal groups. *Journal of Theoretical Biology, 218*(1), 1–11. https://doi.org/10.1006/jtbi.2002.3065
+- Puckett, J. G., Pokhrel, A. R., & Giannini, J. A. (2018). Collective gradient sensing in fish schools. *Scientific Reports, 8*, 7587. https://doi.org/10.1038/s41598-018-26037-9 ([supplement](https://static-content.springer.com/esm/art%3A10.1038%2Fs41598-018-26037-9/MediaObjects/41598_2018_26037_MOESM1_ESM.pdf))
+- Tunstrøm, K., Katz, Y., Ioannou, C. C., Huepe, C., Lutz, M. J., & Couzin, I. D. (2013). Collective states, multistability and transitional behavior in schooling fish. *PLoS Computational Biology, 9*(2), e1002915. https://doi.org/10.1371/journal.pcbi.1002915
