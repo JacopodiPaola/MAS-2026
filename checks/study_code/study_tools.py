@@ -1,7 +1,7 @@
 """Run one simulation, measure the group, and summarise many runs.
 
 The success definition and its thresholds are fixed here BEFORE any study is run
-(see the general README, "¿Cuándo decimos que el cardumen funciona?").
+(see checks/README.md, chapter 4).
 Do not change them after seeing results.
 """
 
@@ -11,7 +11,8 @@ import time
 import numpy as np
 import pandas as pd
 
-from study_model import StudyModel, compute_group_metrics
+from study_model import StudyModel                 # importing it also puts the repository root on sys.path
+from shiner_model import compute_group_metrics
 
 
 # ---------------------------------------------------------------------------
@@ -33,6 +34,21 @@ EXTRA_COLOR = "#2c8c78"
 
 # Set RERUN = True to simulate again even when a saved CSV file exists.
 RERUN = False
+
+# Some text values in the saved CSV files are in Spanish. They stay as they are, because the
+# notebooks use them as keys to find rows; tables and figures show these English names instead.
+DIRECTION_NAMES = {"subiendo": "going up", "bajando": "going down"}
+
+
+def translate(values, english_names):
+    """English names for a list of saved values; a value without a translation stays as it is."""
+    translated = []
+    for value in values:
+        if value in english_names:
+            translated.append(english_names[value])
+        else:
+            translated.append(value)
+    return translated
 
 
 # ---------------------------------------------------------------------------
@@ -82,9 +98,9 @@ def rules_from_text(text):
     return tuple(text.split("+"))
 
 
-# Study 2 options and their defaults. Settings without these keys use the defaults,
+# Options added for trial five, with their defaults. Settings without these keys use the defaults,
 # which reproduce shiner_model.py exactly.
-STUDY_2_DEFAULTS = {
+OPTION_DEFAULTS = {
     "initial_spread": 1.0,
     "update": "synchronous",
     "neighbour_mode": "metric",
@@ -95,11 +111,11 @@ STUDY_2_DEFAULTS = {
 }
 
 
-def study_2_option(settings, key):
-    """The value of a study 2 option, or its default when the settings do not have it."""
+def option_value(settings, key):
+    """The value of a trial five option, or its default when the settings do not have it."""
     if key in settings:
         return settings[key]
-    return STUDY_2_DEFAULTS[key]
+    return OPTION_DEFAULTS[key]
 
 
 def build_model(settings, seed):
@@ -118,13 +134,13 @@ def build_model(settings, seed):
         fov_degrees=settings["fov_degrees"],
         turn_per_decision=settings["turn_per_decision"],
         noise_per_decision=settings["noise_per_decision"],
-        initial_spread=study_2_option(settings, "initial_spread"),
-        update=study_2_option(settings, "update"),
-        neighbour_mode=study_2_option(settings, "neighbour_mode"),
-        k_neighbours=study_2_option(settings, "k_neighbours"),
-        social_combination=study_2_option(settings, "social_combination"),
-        speed_sd=study_2_option(settings, "speed_sd"),
-        speed_gain=study_2_option(settings, "speed_gain"),
+        initial_spread=option_value(settings, "initial_spread"),
+        update=option_value(settings, "update"),
+        neighbour_mode=option_value(settings, "neighbour_mode"),
+        k_neighbours=option_value(settings, "k_neighbours"),
+        social_combination=option_value(settings, "social_combination"),
+        speed_sd=option_value(settings, "speed_sd"),
+        speed_gain=option_value(settings, "speed_gain"),
     )
 
 
@@ -177,7 +193,7 @@ def largest_group_size(distances, link_radius):
 
     Two fish are linked if they are at most `link_radius` apart (they can sense
     each other). A group is every fish that can be reached through a chain of
-    links. Same definition as handlings/trial_one/diagnostics.py.
+    links. Same definition as checks/trial_one/diagnostics.py.
     """
     n_fish = len(distances)
     linked = (distances <= link_radius).tolist()    # plain lists are fast to loop over
@@ -318,7 +334,7 @@ def summarize_window(moments):
     for state in ["polarized", "milling", "swarm", "fragmented"]:
         summary["time_" + state] = fraction_in_state(moments, state)
 
-    # The three parts of "works" (general README), and the final verdict.
+    # The three parts of "works" (checks/README.md, chapter 4), and the final verdict.
     summary["is_together"] = summary["together_fraction"] >= TOGETHER_TIME
     summary["no_collisions"] = summary["collision_fraction"] <= COLLISION_TIME
     summary["is_ordered"] = (summary["polarization"] >= ORDER_THRESHOLD
@@ -332,6 +348,17 @@ def summarize_window(moments):
 # Running simulations
 # ---------------------------------------------------------------------------
 
+def run_and_measure_last_third(model, n_decisions):
+    """Run n_decisions decisions and return the measurements of every decision in the last third."""
+    window_start = n_decisions - n_decisions // 3   # decisions after this one are measured
+    moments = []
+    for decision in range(1, n_decisions + 1):
+        model.step()
+        if decision > window_start:
+            moments.append(measure_moment(model))
+    return moments
+
+
 def run_simulation(settings, seed):
     """Run one simulation and return one dictionary with settings and results.
 
@@ -341,13 +368,7 @@ def run_simulation(settings, seed):
     start_time = time.perf_counter()
     model = build_model(settings, seed)
     n_decisions = number_of_decisions(settings["speed"], settings["dt"], swim_distance_of(settings))
-    window_start = n_decisions - n_decisions // 3   # decisions after this one are measured
-
-    moments = []
-    for decision in range(1, n_decisions + 1):
-        model.step()
-        if decision > window_start:
-            moments.append(measure_moment(model))
+    moments = run_and_measure_last_third(model, n_decisions)
 
     result = dict(settings)
     result["seed"] = seed

@@ -13,7 +13,6 @@ import numpy as np
 # Let Python find study_model.py and study_tools.py next to this file.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-import study_tools
 from study_model import StudyModel
 from study_tools import (
     A0_SETTINGS, PUCKETT_SETTINGS, build_model, change_settings, fish_headings,
@@ -96,7 +95,7 @@ def test_same_step_length_same_trajectories():
 
 
 # ---------------------------------------------------------------------------
-# Tests for the study 2 options
+# Tests for the trial five options
 # ---------------------------------------------------------------------------
 
 def place_fish(model, positions, headings):
@@ -213,7 +212,7 @@ def test_speed_regulation():
     for fish in model.agents:
         speeds.append(fish.speed)
     assert min(speeds) >= 0.5 and max(speeds) <= 1.5 and min(speeds) < max(speeds)
-    print("Test 10 passed: the speed rule follows the README, limited to 0.5-1.5 x the normal speed.")
+    print("Test 10 passed: the speed rule follows checks/README.md (trial five), limited to 0.5-1.5 x the normal speed.")
 
 
 if __name__ == "__main__":

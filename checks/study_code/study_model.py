@@ -10,7 +10,7 @@ Extra options (turn and noise are defined PER DECISION, so they do not depend on
     noise_per_decision  standard deviation of the heading error in one decision,
                         in radians (Puckett: 0.01). 0 means no error.
 
-Options added for study 2 ("parámetros nuevos"):
+Options added for trial five (parameters the papers did not test):
     initial_spread      1.0 = fish start anywhere in the arena; 0.25 = fish start in a
                         central square whose side is 25 % of the arena side.
     update              "synchronous" = all fish decide from the same old state, then all move;
@@ -43,7 +43,7 @@ while not (REPOSITORY_ROOT / "shiner_model.py").is_file():
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
-from shiner_model import GoldenShiners, compute_group_metrics, reflect, unit_vector
+from shiner_model import GoldenShiners, reflect, unit_vector
 
 # Limits of the regulated speed, as a multiple of the fish's own normal speed.
 SLOWEST_FACTOR = 0.5
@@ -122,7 +122,7 @@ class StudyFish(GoldenShiners):
         return np.array([np.cos(new_angle), np.sin(new_angle)])
 
     def regulated_speed(self, neighbors):
-        """Speed regulation inspired by Katz et al. (2011), as described in the study 2 README.
+        """Speed regulation inspired by Katz et al. (2011), as described in checks/README.md (trial five).
 
         For each neighbour, take how far it is ahead (+) or behind (-) in BL.
         A neighbour inside the repulsion zone counts with the opposite sign:
