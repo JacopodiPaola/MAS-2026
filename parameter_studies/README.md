@@ -71,7 +71,7 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 
 ---
 
-## Los 4 estudios
+## Los 5 estudios
 
 | # | Pregunta | Carpeta |
 |---|---|---|
@@ -79,12 +79,14 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 | 2 | ¿Hay parámetros que nadie tuvo en cuenta y que sí importan? | `02_parametros_nuevos/` |
 | 3 | ¿Cómo cambia todo con dt y velocidad? ¿Qué se mantiene igual? | `03_dt_y_velocidad/` |
 | 4 | ¿Qué es lo mínimo que necesitan los peces? ¿Qué parámetros son sensibles? | `04_minimo_y_sensibilidad/` |
+| 5 | Si los peces van rápido un rato, ¿el grupo se recupera? ¿Hace falta la opción C? | `05_pulso_velocidad/` |
 
 **Orden recomendado: 1 → 3 → 4 → 2.**
 - El 1 nos da la configuración base, la de los papers.
 - El 3 es rápido y nos dice en qué rango de velocidades funciona el cardumen, que es justo lo que necesitamos para la luz.
 - El 4 usa esa base para encontrar lo mínimo y lo sensible.
 - El 2 va al final porque necesita más código nuevo.
+- El 5 lo agregamos después, para decidir qué hacer con las velocidades altas antes de la luz.
 
 ---
 
@@ -100,7 +102,7 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 
 ---
 
-## Resumen de los 4 estudios
+## Resumen de los 5 estudios
 
 | # | Estudio | Resultado principal |
 |---|---|---|
@@ -108,6 +110,7 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 | 2 | [Parámetros nuevos](02_parametros_nuevos/README.md) | Importan el inicio y la arena (por el tiempo de juntarse) y la regulación de velocidad de Katz (grupo más compacto). No importan el orden de actualización, los vecinos topológicos ni la forma de sumar orientación y atracción. |
 | 3 | [dt y velocidad](03_dt_y_velocidad/README.md) | El modelo depende **solo de ℓ = velocidad × dt** (comprobado exacto). Sin choques hasta ℓ = 0.125 BL, funciona hasta ℓ ≈ 0.2 BL y desde 0.25 hay choques, por la regla "distancia mínima ≈ 0.5 − 2ℓ". Trial One cae sobre la curva. |
 | 4 | [Mínimo y sensibilidad](04_minimo_y_sensibilidad/README.md) | Hacen falta repulsión y orientación. Son sensibles r_r, r_o y N (los tres a través del **apiñamiento**, N ÷ 0.9 (r_o/r_r)²), ℓ y el campo visual por debajo de 230°. El modelo mínimo funciona en 10/10 seeds nuevas. |
+| 5 | [Pulso de velocidad](05_pulso_velocidad/README.md) | Después de ir rápido, el grupo siempre se recupera, y no hay memoria. Pero con 5 BL/s durante 60 s, 4 de 10 grupos tardan más de 60 s (les faltan 1 a 3 peces sueltos), y durante el pulso hay choques en el 25–38 % del tiempo. Según la regla: **A tiene un problema real**. |
 
 **Cambios respecto del plan:** el estudio 4 usa resultados de los estudios 2 y 3, así que los guardamos (commits) en el orden 1 → 3 → 2 → 4. Todo lo que agregamos fuera del plan está marcado como "extra" en cada estudio. Los extras son: el giro lento de Couzin (estudio 1), los ℓ chicos de Trial Three (estudio 3), la corrida 3 veces más larga y el grupo 8b (estudio 2), y la sensibilidad con el grupo ya junto, el apiñamiento y las filas "sin hueco" (estudio 4).
 
@@ -133,6 +136,8 @@ En el estudio 2 probamos parámetros extra que los papers no discuten: regulaci�
 - Funciona (choques en menos del 5 % del tiempo): **ℓ ≤ 0.2 BL** (hasta 1.6 BL/s).
 - Desde ℓ = 0.25 BL (2 BL/s) hay choques y el grupo se desordena. La regla es: distancia mínima ≈ 0.5 − 2ℓ.
 - La luz va a cambiar la velocidad entre 0.2 y 5 BL/s, es decir, ℓ entre 0.025 y 0.625 BL. **Solo la parte lenta da un cardumen sin choques.** Hay que decidir qué hacer antes de la luz (opciones en el estudio 3). Nuestra sugerencia: dejar el modelo de Puckett tal cual, medir siempre los choques y repetir con una velocidad máxima de 1.6 BL/s como prueba de robustez.
+
+**Estudio 5 (pulso de velocidad): hay que preparar C (o B) junto con la luz.** Según la regla fijada antes de correr, la opción A tiene un problema real: después de 60 s a 5 BL/s, 4 de 10 grupos no se recuperan en 60 s. El daño es pasajero (no hay memoria, y en una prueba extra todos se recuperan en menos de 3 minutos), pero durante los tramos rápidos hay choques en el 25–38 % del tiempo y se sueltan peces. A 2.6 BL/s casi no hay problema. Esto cambia la sugerencia de arriba: A sola no alcanza; C (o B) tiene que estar lista junto con la luz.
 
 **Parámetros que no importan y que se dejan en el valor más simple o en el del paper:**
 
