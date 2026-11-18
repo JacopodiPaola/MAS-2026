@@ -213,6 +213,7 @@ class StudyModel(mesa.Model):
         self.k_neighbours = int(k_neighbours)
         self.social_combination = social_combination
         self.speed_gain = float(speed_gain)
+        self.lightField = None   # shiner_model.py on develop (Jacopo's light draft) reads this; the study model has no light
 
         # Create the fish at random positions (each fish draws its own heading).
         self.space = ContinuousSpace(self.bounds, torus=False, random=self.random, n_agents=n_fish)
