@@ -84,6 +84,39 @@ def reflect(position, direction, bounds):
     return position, direction
 
 
+class LightImplementation:
+
+    def __init__(self, BoundY, BoundLight, height):
+        y = np.asarray(BoundY)
+        Light = np.asarray(BoundLight)
+        if y.ndim != 1 or y.shape != Light.shape or len(y) < 2:
+            raise ValueError("The boundaries need to have the same length (>= 2).")
+        if not np.all(np.diff(y) > 0):
+            raise ValueError("The boundaries need to strictly increase.")
+        if y[0] != 0 or y[-1] != height:
+            raise ValueError("The boundaries need to range from 0 to the height of the enviroment.")
+        if np.any(Light < 0) or np.any(Light > 1):
+            raise ValueError("The bringhtness range must be 0 - 1.")
+
+        self.y =y
+        self.Light = Light
+        self.n_zones = len(y) - 1
+            
+    def zone(self, y):
+        i = np.searchsorted(self.y, y, side = "right") -1 #counts how many boundaries are less than or equal to y. Subtracting 1 simply turns that count into a band index.
+        return np.clip(i, 0, self.n_zones - 1) #forces the index into the range 0 to len(self.slopes) - 1
+        
+    def brightness(self, y):
+        return np.interp(y, self.y, self.Light) #interp finds the two boundaries surrounding y and draws a line between the light values so we have continuity
+        
+    
+
+field = LightImplementation( BoundY = [0, 10, 20, 30, 40 , 50], BoundLight = [1.0, 1.0, 0.4, 0.4, 0.0, 0.0], height = 50)
+        
+
+
+
+
 class GoldenShiners(ContinuousSpaceAgent):
     """A fish that plans from the old state, then commits its planned state."""
 
@@ -91,6 +124,11 @@ class GoldenShiners(ContinuousSpaceAgent):
         super().__init__(space, model)
         self.position = np.array(position, dtype=float)
         self.speed = float(speed)
+
+        if model.lightField is not None:
+            self.speed = float(model.speedAt(self.position[1]))
+            
+        self.nextSpeed = self.speed
         angle = model.rng.uniform(0, 2 * np.pi)
         self.direction = np.array([np.cos(angle), np.sin(angle)])
         self.next_position = self.position.copy()
@@ -201,25 +239,39 @@ class GoldenShiners(ContinuousSpaceAgent):
     def decide(self):
         """Plan without mutating any current position, heading or speed."""
         direction = self.turn_toward(self.social_direction(self.get_neighbors()))
-        position = self.position + direction * self.speed * self.model.dt
+
+        if self.model.lightField is None:
+            self.nextSpeed = self.speed
+        else:
+            self.nextSpeed = float(self.model.speedAt(self.position[1]))
+            
+        position = self.position + direction * self.nextSpeed * self.model.dt
         self.next_position, self.next_direction = reflect(position, direction, self.model.bounds)
 
     def advance(self):
         """Commit the state computed while all fish still had their old state."""
         self.position = self.next_position.copy()
         self.direction = self.next_direction.copy()
+        self.speed = self.nextSpeed
 
 
 class GoldenShinersModel(mesa.Model):
     """Three-zone social dynamics with an observer-only DataCollector."""
 
-    def __init__(
-        self, width=20, height=20, speed=1.0, n_fish=20, seed=None, *,
-        dt=0.125, repulsion_radius=0.5, orientation_radius=3.0,
-        attraction_radius=5.5,
-        enabled_rules=("repulsion", "orientation", "attraction"),
-        fov_degrees=360.0, max_turn_rate=None, angular_noise=0.0,
-        record_every=1,
+    def __init__(self, 
+                 width=20, height=20, 
+                 speed=1.0, n_fish=20, 
+                 seed=None, *,
+                 dt=0.125, 
+                 repulsion_radius=0.5, 
+                 orientation_radius=3.0,
+                 attraction_radius=5.5,
+                 enabled_rules=("repulsion", "orientation", "attraction"),
+                 fov_degrees=360.0, max_turn_rate=None, angular_noise=0.0,
+                 record_every=1,
+                 lightField = None, 
+                 minimumSpeed = 0.5, 
+                 maximumSpeed = 1.0
     ):
         if isinstance(n_fish, bool) or not isinstance(n_fish, (int, np.integer)) or n_fish < 1:
             raise ValueError("n_fish must be a positive integer.")
@@ -237,9 +289,16 @@ class GoldenShinersModel(mesa.Model):
             raise ValueError("angular_noise must be finite and nonnegative.")
         if max_turn_rate is not None and (not np.isfinite(max_turn_rate) or max_turn_rate < 0):
             raise ValueError("max_turn_rate must be None or a finite nonnegative rate in rad/s.")
+        if lightField is not None:
+            if lightField.y[-1] != height:
+                raise ValueError("the Light field height should be the same as the model height")
+            if not 0 <= minimumSpeed <= maximumSpeed:
+                raise ValueError(" The minimum speed can't be negative and the minimum speed can't be higher than the maximum one")
         self.enabled_rules = frozenset(enabled_rules)
         if not self.enabled_rules <= SOCIAL_RULES:
             raise ValueError("Unknown social rule in enabled_rules.")
+
+        
         super().__init__(seed=seed)
         self.initial_seed = seed
         self.bounds = np.array([[0, width], [0, height]], dtype=float)
@@ -251,8 +310,16 @@ class GoldenShinersModel(mesa.Model):
         self.max_turn_rate = max_turn_rate
         self.angular_noise = float(angular_noise)
         self.record_every = int(record_every)
+        
+        self.lightField = lightField
+        self.minimumSpeed = minimumSpeed
+        self.maximumSpeed = maximumSpeed
+        
         self.recorded_steps = []
         self.space = ContinuousSpace(self.bounds, torus=False, random=self.random, n_agents=n_fish)
+        
+
+        
         for _ in range(n_fish):
             position = self.rng.random(2) * np.array([width, height])
             GoldenShiners(self, self.space, position=position, speed=speed)
@@ -280,3 +347,14 @@ class GoldenShinersModel(mesa.Model):
         self.agents.do("advance")
         if self.steps % self.record_every == 0:
             self.record_state()
+            
+    def speedAt(self, y):
+        Light = self.lightField.brightness(y)
+        return self.minimumSpeed + Light * (self.maximumSpeed - self.minimumSpeed)
+
+
+
+
+
+
+
